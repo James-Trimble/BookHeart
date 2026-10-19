@@ -1,61 +1,90 @@
 # BookHeart
 
-BookHeart is an audiobook player for Windows. It's built to be used from the keyboard first and to work well with screen readers: every action has a shortcut, it tells you what happened after each thing you do, and its lists and sliders make sense when they're read aloud.
+**An accessible audiobook player for Windows.**
 
-It keeps a library of your books and remembers where you stopped in each one, along with your bookmarks and how fast and loud you like each book. You can listen at up to three times normal speed without the narrator sounding like a chipmunk, boost quiet recordings up to 300% volume, and jump between chapters in `.m4b` files or in books that come as a folder of `.mp3`s.
+BookHeart is made to be used from the keyboard and with a screen reader. Every action has a shortcut, it tells you what happened after each thing you do, and its lists and sliders make sense when they're read aloud. It works with NVDA, JAWS and Narrator.
 
-The [manual](docs/manual.md) explains everything it does.
+It keeps a library of your audiobooks and remembers where you stopped in each one, along with your bookmarks and how fast and loud you like each book.
 
-## Download
+**[Download the latest version](https://github.com/James-Trimble/BookHeart/releases/latest)**
 
-Releases are on the [Releases page](https://github.com/James-Trimble/BookHeart/releases). Each one has two downloads:
+## What it does
 
-- **BookHeart-x.y.z-Setup.exe** installs BookHeart with Start menu and desktop shortcuts, and can set it to open `.m4b` files when you double-click them.
-- **BookHeart-x.y.z-Portable.zip** doesn't install anything. Unzip it anywhere and run `BookHeart.exe`. It keeps its library in a `Data` folder beside it.
+- **Keeps your library.** Add a single file, a book that comes as a folder of parts, or a whole folder of books at once. Search it, sort it, and see how far through each book you are and how much is left.
+- **Remembers your place** in every book, even if you close it halfway through a sentence. If you move your files, it asks where they went and keeps your place.
+- **Plays at your speed.** Anywhere from half speed to three times as fast, and the narrator's voice stays at its normal pitch.
+- **Makes quiet recordings louder**, up to 300% volume, without crackling on the loud parts.
+- **Finds the chapters** inside `.m4b` audiobooks, or treats each file as a chapter for books that come in parts.
+- **Bookmarks**, with notes if you want them.
+- **Tells you where you are.** Press Alt+I to hear the chapter, your position, and how much of the book is left at your current speed.
+- **Remembers settings per book.** Set a default speed and volume, and give any book its own.
+- **Works with your media keys**, even when BookHeart isn't the window in front.
+- Light, dark and high-contrast colours.
 
-It needs 64-bit Windows 10 (version 1809 or newer) or Windows 11.
+It plays `.m4b`, `.m4a`, `.mp3`, `.aac`, `.flac`, `.wav`, `.wma` and `.ogg` files.
 
-## Building it
+## Getting it
 
-You'll need Windows and the [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0).
+Go to the [latest release](https://github.com/James-Trimble/BookHeart/releases/latest) and download one of these:
+
+- **BookHeart-x.y.z-Setup.exe** installs BookHeart with Start menu and desktop shortcuts, and can set it to open `.m4b` audiobooks when you double-click them. This is the one most people want.
+- **BookHeart-x.y.z-Portable.zip** doesn't install anything. Unzip it anywhere, even on a USB stick, and run `BookHeart.exe`.
+
+You need Windows 10 (version 1809 or newer) or Windows 11, 64-bit. It's free.
+
+The first time you run it, Windows may say it "protected your PC", because BookHeart is new and not yet signed. Choose **More info**, then **Run anyway**.
+
+## Learning to use it
+
+The [user manual](docs/manual.md) explains everything, and it comes with BookHeart too (Help → User manual). Inside the program, press **F1** for the list of keyboard shortcuts.
+
+The ones you'll use most:
+
+| Keys | What it does |
+| --- | --- |
+| Alt+P | Play or pause |
+| Alt+Comma / Alt+Period | Skip back / forward |
+| Alt+Left / Alt+Right | Previous / next chapter |
+| Alt+I | Where am I? |
+| Alt+B | Add a bookmark |
+| Ctrl+[ / Ctrl+] | Slower / faster |
+| Ctrl+O | Add books |
+
+## Privacy
+
+BookHeart doesn't collect anything about you and doesn't connect to the internet. Your books, places, bookmarks and settings stay on your computer.
+
+## What's next
+
+- Feedback from inside BookHeart, so you can tell me what works and what doesn't without leaving the program.
+- Automatic updates.
+- A website, and a version that plays in your web browser.
+- BookHeart in more languages.
+
+## Licence
+
+BookHeart is free to use under its [licence agreement](legal/EULA.txt).
+
+The source code is copyright © 2026 James Trimble, all rights reserved. It's published so people can see how BookHeart works, but you may not copy, change, share or build on it without written permission. See [LICENSE.txt](LICENSE.txt).
+
+BookHeart uses some open-source components, which are covered by their own licences. They're listed in [legal/THIRD-PARTY-NOTICES.txt](legal/THIRD-PARTY-NOTICES.txt).
+
+---
+
+<details>
+<summary>Building BookHeart (for the developer)</summary>
+
+You need Windows and the [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0).
 
 ```
 dotnet test tests/BookHeart.Core.Tests
 dotnet run --project src/BookHeart
 ```
 
-To build what goes out in a release, run `pwsh build/build.ps1`. It runs the tests, builds the program twice (a normal folder for the installer and a single `.exe` for the portable copy), checks that both start, turns the manual into a web page, and puts the installer and portable zip in `release/`. It uses [Inno Setup](https://jrsoftware.org/isinfo.php) for the installer and installs it through Chocolatey if it isn't there.
+`pwsh build/build.ps1` runs the tests and builds the installer and portable zip into `release/`. It uses [Inno Setup](https://jrsoftware.org/isinfo.php) for the installer. GitHub Actions runs it on every push.
 
-GitHub Actions runs the same script on every push. The results are attached to each run.
+To make a release: set the version in `Directory.Build.props`, write `release-notes/v<version>.md`, then run the **Release** workflow from the Actions tab with that version number. The **Delete release** workflow removes a release and its tag.
 
-## Making a release
+The code is in three parts: `src/BookHeart.Core` (the library file, finding books in folders, chapters, sorting and formatting, with no Windows code, so a web version can reuse it), `src/BookHeart` (the Windows app in C# and WPF, using NAudio for playback and SoundTouch for speed), and `tests/BookHeart.Core.Tests`. The installer script is `installer/BookHeart.iss` and the manual is `docs/manual.md`. The app's name is set in `Directory.Build.props` and `installer/BookHeart.iss`.
 
-1. Change the version in `Directory.Build.props`.
-2. Write the release notes in `release-notes/v<version>.md`.
-3. On GitHub, go to **Actions**, pick **Release**, choose **Run workflow** and enter the version number. It builds everything, tests it, and publishes the release.
-
-## How the code is laid out
-
-- `src/BookHeart.Core` holds everything that doesn't depend on Windows: the library file, working out which files make up a book, reading chapters from `.m4b` files, sorting, titles and time formatting. It's kept separate so the web player planned for later can use it.
-- `src/BookHeart` is the Windows app itself, written in C# with WPF. The audio engine uses [NAudio](https://github.com/naudio/NAudio) to decode and play, and [SoundTouch](https://github.com/owoudenberg/soundtouch.net) to change speed without changing pitch.
-- `tests/BookHeart.Core.Tests` has the unit tests.
-- `installer/BookHeart.iss` is the installer script.
-- `build/` has the build scripts.
-- `docs/manual.md` is the user manual. The build turns it into `BookHeart Manual.html`, which ships with the app and opens from Help → User manual.
-
-The app's name is set in two places: `Directory.Build.props` and `installer/BookHeart.iss`.
-
-## Plans
-
-- A website, with a web version of the player for people who don't want to install anything.
-- Feedback from inside the app and from the website.
-- Automatic updates.
-- The app itself in more languages. The installer already speaks seventeen.
-
-## Licence
-
-BookHeart is copyright © 2026 James Trimble. All rights reserved.
-
-The source code is here to be read, not reused. You may not copy, modify, distribute or build on it without written permission. See [LICENSE.txt](LICENSE.txt).
-
-The program is free to use under the [end user licence agreement](legal/EULA.txt). It includes open-source components under their own licences, listed in [legal/THIRD-PARTY-NOTICES.txt](legal/THIRD-PARTY-NOTICES.txt).
+</details>
