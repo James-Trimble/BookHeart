@@ -1,4 +1,4 @@
-; Installer for BookHeart, built with Inno Setup 6 (https://jrsoftware.org/isinfo.php).
+﻿; Installer for BookHeart, built with Inno Setup 6 (https://jrsoftware.org/isinfo.php).
 ; The build passes the version and the folder of published files:
 ;   iscc /DAppVersion=0.1.0 /DSourceDir=..\publish\installer BookHeart.iss
 
@@ -22,7 +22,11 @@ AppVerName={#AppName} {#AppVersion}
 AppPublisher={#AppPublisher}
 AppPublisherURL=https://github.com/James-Trimble/Audiobook-Player
 AppSupportURL=https://github.com/James-Trimble/Audiobook-Player/issues
+AppCopyright=Copyright © 2026 {#AppPublisher}
 VersionInfoVersion={#AppVersion}
+VersionInfoCompany={#AppPublisher}
+VersionInfoCopyright=Copyright © 2026 {#AppPublisher}
+VersionInfoDescription={#AppName} Setup
 ; Install for just you (no admin needed) or for everyone; the installer asks.
 PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog

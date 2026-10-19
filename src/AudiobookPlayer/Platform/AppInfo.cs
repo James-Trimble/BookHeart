@@ -9,6 +9,12 @@ internal static class AppInfo
     public static string Name { get; } =
         typeof(AppInfo).Assembly.GetCustomAttribute<AssemblyProductAttribute>()?.Product ?? "BookHeart";
 
+    public static string Developer { get; } =
+        typeof(AppInfo).Assembly.GetCustomAttribute<AssemblyCompanyAttribute>()?.Company ?? "James Trimble";
+
+    public static string Copyright { get; } =
+        typeof(AppInfo).Assembly.GetCustomAttribute<AssemblyCopyrightAttribute>()?.Copyright ?? "";
+
     /// <summary>The version from Directory.Build.props, without build metadata.</summary>
     public static string Version { get; } =
         (typeof(AppInfo).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "0.0.0").Split('+')[0];

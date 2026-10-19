@@ -4,6 +4,7 @@
     <AppName>BookHeart</AppName>
     <Version>0.1.0</Version>
     <Authors>James Trimble</Authors>
-    <Copyright>Copyright © James Trimble</Copyright>
+    <Company>James Trimble</Company>
+    <Copyright>Copyright © 2026 James Trimble</Copyright>
   </PropertyGroup>
 </Project>
