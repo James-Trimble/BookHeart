@@ -1,0 +1,210 @@
+<Application x:Class="AudiobookPlayer.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Application.Resources>
+    <!-- Colours are filled in by Platform/Theme.cs to follow Windows light, dark and high-contrast modes. -->
+    <SolidColorBrush x:Key="Bg" Color="#F3F7FB" />
+    <SolidColorBrush x:Key="Surface" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="Ink" Color="#0A2540" />
+    <SolidColorBrush x:Key="Muted" Color="#3D5570" />
+    <SolidColorBrush x:Key="Primary" Color="#1747B8" />
+    <SolidColorBrush x:Key="PrimaryInk" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="Line" Color="#B9C7D8" />
+    <SolidColorBrush x:Key="Focus" Color="#FFD100" />
+    <SolidColorBrush x:Key="FocusRing" Color="#0A2540" />
+    <SolidColorBrush x:Key="Danger" Color="#A61B1B" />
+
+    <BooleanToVisibilityConverter x:Key="BoolToVis" />
+    <FontFamily x:Key="BodyFont">Atkinson Hyperlegible, Segoe UI, Verdana</FontFamily>
+
+    <!-- A thick, two-colour focus ring that is easy to see on any background. -->
+    <Style x:Key="FocusRingStyle">
+      <Setter Property="Control.Template">
+        <Setter.Value>
+          <ControlTemplate>
+            <Grid Margin="-6">
+              <Rectangle RadiusX="10" RadiusY="10" Stroke="{DynamicResource FocusRing}" StrokeThickness="7" />
+              <Rectangle RadiusX="10" RadiusY="10" Margin="1.5" Stroke="{DynamicResource Focus}" StrokeThickness="4" />
+            </Grid>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <Style TargetType="Button">
+      <Setter Property="FocusVisualStyle" Value="{StaticResource FocusRingStyle}" />
+      <Setter Property="Background" Value="{DynamicResource Surface}" />
+      <Setter Property="Foreground" Value="{DynamicResource Ink}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource Ink}" />
+      <Setter Property="BorderThickness" Value="2" />
+      <Setter Property="FontWeight" Value="Bold" />
+      <Setter Property="Padding" Value="16,8" />
+      <Setter Property="MinHeight" Value="52" />
+      <Setter Property="Margin" Value="0,0,12,12" />
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border x:Name="Bd" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+              <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                VerticalAlignment="Center" RecognizesAccessKey="False" />
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="Bd" Property="BorderThickness" Value="3" />
+              </Trigger>
+              <Trigger Property="IsPressed" Value="True">
+                <Setter TargetName="Bd" Property="Opacity" Value="0.8" />
+              </Trigger>
+              <Trigger Property="IsEnabled" Value="False">
+                <Setter TargetName="Bd" Property="Opacity" Value="0.45" />
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <Style x:Key="PrimaryButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+      <Setter Property="Background" Value="{DynamicResource Primary}" />
+      <Setter Property="Foreground" Value="{DynamicResource PrimaryInk}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource Primary}" />
+    </Style>
+
+    <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+      <Setter Property="Foreground" Value="{DynamicResource Danger}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource Danger}" />
+      <Setter Property="FontWeight" Value="Normal" />
+    </Style>
+
+    <Style TargetType="TextBox">
+      <Setter Property="FocusVisualStyle" Value="{StaticResource FocusRingStyle}" />
+      <Setter Property="Background" Value="{DynamicResource Surface}" />
+      <Setter Property="Foreground" Value="{DynamicResource Ink}" />
+      <Setter Property="CaretBrush" Value="{DynamicResource Ink}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource Ink}" />
+      <Setter Property="BorderThickness" Value="2" />
+      <Setter Property="Padding" Value="8" />
+      <Setter Property="MinHeight" Value="52" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+
+    <!-- The standard Windows drop-down, kept in system colours so its list is always readable. -->
+    <Style TargetType="ComboBox">
+      <Setter Property="FocusVisualStyle" Value="{StaticResource FocusRingStyle}" />
+      <Setter Property="Foreground" Value="{x:Static SystemColors.ControlTextBrush}" />
+      <Setter Property="MinHeight" Value="52" />
+      <Setter Property="Padding" Value="10,8" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+
+    <Style TargetType="Slider">
+      <Setter Property="FocusVisualStyle" Value="{StaticResource FocusRingStyle}" />
+      <Setter Property="Foreground" Value="{DynamicResource Primary}" />
+      <Setter Property="MinHeight" Value="40" />
+      <Setter Property="IsMoveToPointEnabled" Value="True" />
+    </Style>
+
+    <Style TargetType="CheckBox">
+      <Setter Property="FocusVisualStyle" Value="{StaticResource FocusRingStyle}" />
+      <Setter Property="Foreground" Value="{DynamicResource Ink}" />
+    </Style>
+
+    <Style TargetType="ProgressBar">
+      <Setter Property="Foreground" Value="{DynamicResource Primary}" />
+      <Setter Property="Background" Value="{DynamicResource Line}" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Height" Value="14" />
+    </Style>
+
+    <!-- Lists you move through with the arrow keys. Enter opens the selected item. -->
+    <Style TargetType="ListBox">
+      <Setter Property="Background" Value="{DynamicResource Surface}" />
+      <Setter Property="Foreground" Value="{DynamicResource Ink}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource Line}" />
+      <Setter Property="BorderThickness" Value="2" />
+      <Setter Property="Padding" Value="4" />
+      <Setter Property="MaxHeight" Value="460" />
+      <Setter Property="Margin" Value="0,0,0,12" />
+      <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+      <Setter Property="KeyboardNavigation.TabNavigation" Value="Once" />
+      <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+    </Style>
+
+    <Style x:Key="RowItem" TargetType="ListBoxItem">
+      <Setter Property="AutomationProperties.Name" Value="{Binding Spoken}" />
+      <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+      <Setter Property="Foreground" Value="{DynamicResource Ink}" />
+      <Setter Property="Margin" Value="2" />
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="ListBoxItem">
+            <Grid>
+              <Border x:Name="Bd" Background="Transparent" BorderBrush="{DynamicResource Line}" BorderThickness="0,0,0,1" Padding="12,10">
+                <ContentPresenter />
+              </Border>
+              <Border x:Name="Ring" BorderBrush="{DynamicResource Focus}" BorderThickness="4" CornerRadius="6" Visibility="Collapsed" />
+            </Grid>
+            <ControlTemplate.Triggers>
+              <DataTrigger Binding="{Binding IsCurrent}" Value="True">
+                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Primary}" />
+                <Setter TargetName="Bd" Property="BorderThickness" Value="6,0,0,1" />
+              </DataTrigger>
+              <Trigger Property="IsSelected" Value="True">
+                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Primary}" />
+                <Setter Property="Foreground" Value="{DynamicResource PrimaryInk}" />
+              </Trigger>
+              <Trigger Property="IsKeyboardFocused" Value="True">
+                <Setter TargetName="Ring" Property="Visibility" Value="Visible" />
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <DataTemplate x:Key="RowTemplate">
+      <StackPanel>
+        <TextBlock Text="{Binding Title}" FontWeight="Bold" TextWrapping="Wrap" />
+        <TextBlock Text="{Binding Detail}" TextWrapping="Wrap" Opacity="0.85"
+                   Visibility="{Binding HasDetail, Converter={StaticResource BoolToVis}}" />
+      </StackPanel>
+    </DataTemplate>
+
+    <Style x:Key="H1" TargetType="TextBlock">
+      <Setter Property="FontSize" Value="36" />
+      <Setter Property="FontWeight" Value="Bold" />
+      <Setter Property="Margin" Value="0,8,0,8" />
+      <Setter Property="TextWrapping" Value="Wrap" />
+      <Setter Property="AutomationProperties.HeadingLevel" Value="Level1" />
+    </Style>
+    <Style x:Key="H2" TargetType="TextBlock">
+      <Setter Property="FontSize" Value="26" />
+      <Setter Property="FontWeight" Value="Bold" />
+      <Setter Property="Margin" Value="0,32,0,12" />
+      <Setter Property="TextWrapping" Value="Wrap" />
+      <Setter Property="AutomationProperties.HeadingLevel" Value="Level2" />
+    </Style>
+    <Style x:Key="Para" TargetType="TextBlock">
+      <Setter Property="TextWrapping" Value="Wrap" />
+      <Setter Property="Margin" Value="0,0,0,12" />
+    </Style>
+    <Style x:Key="MutedPara" TargetType="TextBlock" BasedOn="{StaticResource Para}">
+      <Setter Property="Foreground" Value="{DynamicResource Muted}" />
+    </Style>
+    <Style x:Key="FieldLabel" TargetType="Label">
+      <Setter Property="FontWeight" Value="Bold" />
+      <Setter Property="Foreground" Value="{DynamicResource Ink}" />
+      <Setter Property="Padding" Value="0,0,0,6" />
+    </Style>
+    <Style x:Key="Card" TargetType="Border">
+      <Setter Property="Background" Value="{DynamicResource Surface}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource Line}" />
+      <Setter Property="BorderThickness" Value="2" />
+      <Setter Property="CornerRadius" Value="16" />
+      <Setter Property="Padding" Value="20,20,8,8" />
+      <Setter Property="Margin" Value="0,16,0,0" />
+    </Style>
+  </Application.Resources>
+</Application>
