@@ -14,10 +14,6 @@ These are ideas, not promises. BookHeart is very new, and anything here can chan
 - Sharper text.
 - Move to .NET 10, before support for .NET 8 ends on 10 November 2026.
 
-## A new name
-
-The name BookHeart is already a registered trademark for another company, so it needs to change before the first public release. That means choosing a name, getting its domain, making a new icon, and renaming the program, installer and documents. TomeTune is the favourite so far.
-
 ## Before the first public release
 
 - **A website**, with a home page, downloads, the manual, a privacy page and a way to donate (Ko-fi or GitHub Sponsors).
