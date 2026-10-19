@@ -19,6 +19,7 @@ It keeps a library of your audiobooks and remembers where you stopped in each on
 - **Tells you where you are.** Press Alt+I to hear the chapter, your position, and how much of the book is left at your current speed.
 - **Remembers settings per book.** Set a default speed and volume, and give any book its own.
 - **Works with your media keys**, even when BookHeart isn't the window in front.
+- **Keeps itself up to date.** It tells you when there's a new version and what's in it, and installs it if you say so.
 - Light, dark and high-contrast colours.
 
 It plays `.m4b`, `.m4a`, `.mp3`, `.aac`, `.flac`, `.wav`, `.wma` and `.ogg` files.
@@ -43,21 +44,21 @@ The ones you'll use most:
 | Keys | What it does |
 | --- | --- |
 | Alt+P | Play or pause |
-| Alt+Comma / Alt+Period | Skip back / forward |
-| Alt+Left / Alt+Right | Previous / next chapter |
+| Alt+Left / Alt+Right | Skip back / forward |
+| Ctrl+Left / Ctrl+Right | Previous / next chapter |
+| Ctrl+Down / Ctrl+Up | Slower / faster |
+| Alt+Down / Alt+Up | Quieter / louder |
 | Alt+I | Where am I? |
 | Alt+B | Add a bookmark |
-| Ctrl+[ / Ctrl+] | Slower / faster |
 | Ctrl+O | Add books |
 
 ## Privacy
 
-BookHeart doesn't collect anything about you and doesn't connect to the internet. Your books, places, bookmarks and settings stay on your computer.
+BookHeart doesn't collect anything about you. Your books, places, bookmarks and settings stay on your computer. The only time it goes online is to check for updates, which means asking GitHub for the list of BookHeart versions, and you can turn that off in Settings.
 
 ## What's next
 
 - Feedback from inside BookHeart, so you can tell me what works and what doesn't without leaving the program.
-- Automatic updates.
 - A website, and a version that plays in your web browser.
 - BookHeart in more languages.
 

@@ -9,6 +9,10 @@
 #ifndef AppVersion
   #define AppVersion "0.0.0"
 #endif
+; Windows file versions must be plain numbers, so test versions like 0.2.0-beta.1 use 0.2.0 here.
+#ifndef AppNumericVersion
+  #define AppNumericVersion "0.0.0"
+#endif
 #ifndef SourceDir
   #define SourceDir "..\publish\installer"
 #endif
@@ -23,7 +27,7 @@ AppPublisher={#AppPublisher}
 AppPublisherURL=https://github.com/James-Trimble/BookHeart
 AppSupportURL=https://github.com/James-Trimble/BookHeart/issues
 AppCopyright=Copyright © 2026 {#AppPublisher}
-VersionInfoVersion={#AppVersion}
+VersionInfoVersion={#AppNumericVersion}
 VersionInfoCompany={#AppPublisher}
 VersionInfoCopyright=Copyright © 2026 {#AppPublisher}
 VersionInfoDescription={#AppName} Setup
@@ -132,3 +136,5 @@ Root: HKA; Subkey: "Software\Classes\Applications\{#AppExe}\SupportedTypes"; Val
 
 [Run]
 Filename: "{app}\{#AppExe}"; Description: "{cm:LaunchProgram,{#AppName}}"; Flags: nowait postinstall skipifsilent
+; When BookHeart updates itself, the installer runs silently and opens BookHeart again afterwards.
+Filename: "{app}\{#AppExe}"; Parameters: "--updated"; Flags: nowait runasoriginaluser; Check: WizardSilent

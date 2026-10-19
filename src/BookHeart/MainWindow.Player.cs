@@ -2,6 +2,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Input;
+using System.Windows.Threading;
 using BookHeart.Controls;
 using BookHeart.Core;
 using BookHeart.Platform;
@@ -217,6 +218,8 @@ public partial class MainWindow
         AutomationProperties.SetName(PlayBtn, playing ? "Pause" : "Play");
         _media?.SetPlaying(playing);
         if (playing) _tick.Start(); else _tick.Stop();
+        // An update found while you were listening waits until you pause.
+        if (!playing && _pendingUpdate is not null) Dispatcher.BeginInvoke(ShowPendingUpdate, DispatcherPriority.Background);
         UpdatePosition(force: true);
         if (!PlayerShown) RenderContinueCard();
     }

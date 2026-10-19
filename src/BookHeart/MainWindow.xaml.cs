@@ -25,6 +25,7 @@ public partial class MainWindow : Window
     private readonly Announcer _say;
     private MediaControls? _media;
     private readonly string[] _startupFiles;
+    private readonly bool _justUpdated;
 
     private readonly ObservableCollection<Row> _bookRows = [];
     private readonly ObservableCollection<Row> _bookmarkRows = [];
@@ -34,7 +35,8 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         _store = store;
-        _startupFiles = startupFiles;
+        _justUpdated = startupFiles.Contains("--updated");
+        _startupFiles = startupFiles.Where(a => a != "--updated").ToArray();
         _say = new Announcer(this);
         _say.Announced += m => StatusText.Text = m;
         Title = AppInfo.Name;
@@ -81,9 +83,11 @@ public partial class MainWindow : Window
         ShowLibrary(focus: true);
 
         if (_startupFiles.Length > 0) OpenPaths(_startupFiles, play: true);
+        else if (_justUpdated) WelcomeBackAfterUpdate();
         else if (_store.Settings.OpenLastBookOnStart && _store.LastPlayed is { } last && last.MissingFiles().Count == 0)
             OpenEntry(last, autoplay: false);
         ProbeLibrary();
+        StartUpdateChecks();
     }
 
     private void OnClosing(object? sender, CancelEventArgs e)
@@ -167,6 +171,7 @@ public partial class MainWindow : Window
             try { Process.Start("explorer.exe", $"\"{AppInfo.DataDirectory}\""); } catch (Exception) { }
         };
         MenuAbout.Click += (_, _) => Dialogs.Dialogs.ShowAbout(this);
+        MenuUpdates.Click += async (_, _) => await CheckForUpdatesAsync(manual: true);
     }
 
     private void OnShortcutKey(object sender, KeyEventArgs e)
@@ -187,15 +192,14 @@ public partial class MainWindow : Window
 
         var key = e.Key == Key.System ? e.SystemKey : e.Key;
         var mods = Keyboard.Modifiers;
+        bool typing = Keyboard.FocusedElement is TextBox;
         Action? action = mods switch
         {
             ModifierKeys.Alt => key switch
             {
                 Key.P => TogglePlay,
-                Key.OemComma => () => Skip(-1),
-                Key.OemPeriod => () => Skip(1),
-                Key.Left => PreviousChapter,
-                Key.Right => NextChapter,
+                Key.Left => () => Skip(-1),
+                Key.Right => () => Skip(1),
                 Key.Up => () => ChangeVolume(+10),
                 Key.Down => () => ChangeVolume(-10),
                 Key.B => () => AddBookmark(askForNote: false),
@@ -209,8 +213,11 @@ public partial class MainWindow : Window
                 Key.O => AddBooks,
                 Key.B => () => AddBookmark(askForNote: true),
                 Key.E => () => OpenBookSettings(_book),
-                Key.OemCloseBrackets => () => ChangeSpeed(+1),
-                Key.OemOpenBrackets => () => ChangeSpeed(-1),
+                // In a text box, Control with the arrows moves by word as usual.
+                Key.Left when !typing => PreviousChapter,
+                Key.Right when !typing => NextChapter,
+                Key.Up when !typing => () => ChangeSpeed(+1),
+                Key.Down when !typing => () => ChangeSpeed(-1),
                 Key.D1 or Key.NumPad1 => () => ShowLibrary(focus: true),
                 Key.D2 or Key.NumPad2 => () => ShowPlayer(focus: true),
                 Key.OemComma => OpenSettings,
@@ -220,7 +227,7 @@ public partial class MainWindow : Window
             ModifierKeys.None => key switch
             {
                 Key.F1 => () => Dialogs.Dialogs.ShowShortcuts(this),
-                Key.Escape when PlayerShown && Keyboard.FocusedElement is not TextBox => () => ShowLibrary(focus: true),
+                Key.Escape when PlayerShown && !typing => () => ShowLibrary(focus: true),
                 _ => null,
             },
             _ => null,

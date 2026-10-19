@@ -55,9 +55,14 @@ debug such modifications.
 6. Your files and privacy
 
 BookHeart plays audio files that are already on your computer. It does not
-upload, copy or change them. BookHeart does not collect personal information
-and does not send anything over the internet. Your library, places, bookmarks
-and settings are stored only on your computer.
+upload, copy or change them. BookHeart does not collect personal information.
+Your library, places, bookmarks and settings are stored only on your computer.
+
+BookHeart uses the internet only to check for and download updates. To do
+this it asks GitHub (github.com), where BookHeart's releases are published,
+for the list of available versions. Nothing about you, your computer or your
+books is sent, although, as with visiting any website, GitHub can see your
+internet address. You can turn automatic update checks off in Settings.
 
 You are responsible for having the right to listen to the audiobooks you use
 with BookHeart.

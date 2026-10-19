@@ -20,6 +20,8 @@ public partial class SettingsDialog : Window
         foreach (var (_, label) in Themes) ThemeBox.Items.Add(label);
         ThemeBox.SelectedIndex = Array.FindIndex(Themes, t => t.Value == settings.Theme);
         OpenLastBox.IsChecked = settings.OpenLastBookOnStart;
+        CheckUpdatesBox.IsChecked = settings.CheckForUpdates;
+        TestVersionsBox.IsChecked = settings.IncludeTestVersions;
 
         ApplyAllBtn.Click += (_, _) =>
         {
@@ -44,6 +46,9 @@ public partial class SettingsDialog : Window
         settings.SkipSeconds = dlg.Audio.SkipSeconds;
         settings.Theme = Themes[Math.Max(0, dlg.ThemeBox.SelectedIndex)].Value;
         settings.OpenLastBookOnStart = dlg.OpenLastBox.IsChecked == true;
+        settings.CheckForUpdates = dlg.CheckUpdatesBox.IsChecked == true;
+        if (dlg.TestVersionsBox.IsChecked == true && !settings.IncludeTestVersions) settings.SkippedVersion = null;
+        settings.IncludeTestVersions = dlg.TestVersionsBox.IsChecked == true;
         if (dlg._clearBooks)
             foreach (var b in books) b.Audio = new BookAudio();
         return true;

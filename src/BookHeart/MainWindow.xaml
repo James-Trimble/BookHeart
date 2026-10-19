@@ -18,13 +18,13 @@
       </MenuItem>
       <MenuItem x:Name="PlaybackMenu" Header="P_layback">
         <MenuItem x:Name="MenuPlay" Header="_Play / Pause" InputGestureText="Alt+P" />
-        <MenuItem x:Name="MenuBack" Header="Skip _back" InputGestureText="Alt+Comma" />
-        <MenuItem x:Name="MenuForward" Header="Skip _forward" InputGestureText="Alt+Period" />
-        <MenuItem x:Name="MenuPrevChapter" Header="Pre_vious chapter" InputGestureText="Alt+Left" />
-        <MenuItem x:Name="MenuNextChapter" Header="_Next chapter" InputGestureText="Alt+Right" />
+        <MenuItem x:Name="MenuBack" Header="Skip _back" InputGestureText="Alt+Left" />
+        <MenuItem x:Name="MenuForward" Header="Skip _forward" InputGestureText="Alt+Right" />
+        <MenuItem x:Name="MenuPrevChapter" Header="Pre_vious chapter" InputGestureText="Ctrl+Left" />
+        <MenuItem x:Name="MenuNextChapter" Header="_Next chapter" InputGestureText="Ctrl+Right" />
         <Separator />
-        <MenuItem x:Name="MenuFaster" Header="F_aster" InputGestureText="Ctrl+]" />
-        <MenuItem x:Name="MenuSlower" Header="_Slower" InputGestureText="Ctrl+[" />
+        <MenuItem x:Name="MenuFaster" Header="F_aster" InputGestureText="Ctrl+Up" />
+        <MenuItem x:Name="MenuSlower" Header="_Slower" InputGestureText="Ctrl+Down" />
         <MenuItem x:Name="MenuVolUp" Header="Volume _up" InputGestureText="Alt+Up" />
         <MenuItem x:Name="MenuVolDown" Header="Volume _down" InputGestureText="Alt+Down" />
         <Separator />
@@ -42,6 +42,8 @@
         <MenuItem x:Name="MenuManual" Header="User _manual" />
         <MenuItem x:Name="MenuShortcuts" Header="_Keyboard shortcuts" InputGestureText="F1" />
         <MenuItem x:Name="MenuDataFolder" Header="Open _data folder" />
+        <Separator />
+        <MenuItem x:Name="MenuUpdates" Header="Check for _updates…" />
         <Separator />
         <MenuItem x:Name="MenuLicense" Header="_Licence agreement" />
         <MenuItem x:Name="MenuNotices" Header="_Third-party notices" />
@@ -167,10 +169,10 @@
                             AutomationProperties.LabeledBy="{Binding ElementName=SeekLabel}" />
 
             <UniformGrid Rows="1" Margin="0,4,0,0">
-              <Button x:Name="PrevChBtn" AutomationProperties.Name="Previous chapter" AutomationProperties.AcceleratorKey="Alt+Left" Padding="8">
+              <Button x:Name="PrevChBtn" AutomationProperties.Name="Previous chapter" AutomationProperties.AcceleratorKey="Control+Left" Padding="8">
                 <StackPanel><TextBlock Style="{StaticResource IconText}" Text="&#xE892;" /><TextBlock x:Name="PrevChLabel" Text="Chapter" HorizontalAlignment="Center" FontSize="16" /></StackPanel>
               </Button>
-              <Button x:Name="BackBtn" AutomationProperties.AcceleratorKey="Alt+Comma" Padding="8">
+              <Button x:Name="BackBtn" AutomationProperties.AcceleratorKey="Alt+Left" Padding="8">
                 <StackPanel><TextBlock Style="{StaticResource IconText}" Text="&#xE72B;" /><TextBlock x:Name="BackLabel" HorizontalAlignment="Center" FontSize="16" /></StackPanel>
               </Button>
               <Button x:Name="PlayBtn" Style="{StaticResource PrimaryButton}" AutomationProperties.Name="Play" AutomationProperties.AcceleratorKey="Alt+P" MinHeight="76" Padding="8">
@@ -179,10 +181,10 @@
                   <TextBlock x:Name="PlayLabel" Text="Play" HorizontalAlignment="Center" FontSize="18" />
                 </StackPanel>
               </Button>
-              <Button x:Name="FwdBtn" AutomationProperties.AcceleratorKey="Alt+Period" Padding="8">
+              <Button x:Name="FwdBtn" AutomationProperties.AcceleratorKey="Alt+Right" Padding="8">
                 <StackPanel><TextBlock Style="{StaticResource IconText}" Text="&#xE72A;" /><TextBlock x:Name="FwdLabel" HorizontalAlignment="Center" FontSize="16" /></StackPanel>
               </Button>
-              <Button x:Name="NextChBtn" AutomationProperties.Name="Next chapter" AutomationProperties.AcceleratorKey="Alt+Right" Padding="8">
+              <Button x:Name="NextChBtn" AutomationProperties.Name="Next chapter" AutomationProperties.AcceleratorKey="Control+Right" Padding="8">
                 <StackPanel><TextBlock Style="{StaticResource IconText}" Text="&#xE893;" /><TextBlock Text="Chapter" HorizontalAlignment="Center" FontSize="16" /></StackPanel>
               </Button>
             </UniformGrid>

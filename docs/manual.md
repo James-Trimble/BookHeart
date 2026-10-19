@@ -2,7 +2,7 @@
 
 BookHeart is an audiobook player for Windows. It keeps a library of your books, remembers where you stopped in each one, and gets out of your way while you listen. It was built from the start to work well with a keyboard and a screen reader, so everything in this manual can be done without a mouse.
 
-This manual covers version 0.1.
+This manual covers version 0.2.
 
 ## Contents
 
@@ -15,12 +15,13 @@ This manual covers version 0.1.
 7. [Speed, volume and skip amount](#speed-volume-and-skip-amount)
 8. [Book settings](#book-settings)
 9. [Settings](#settings)
-10. [Using BookHeart with a screen reader](#using-bookheart-with-a-screen-reader)
-11. [When a book's files move](#when-a-books-files-move)
-12. [Where your library is kept](#where-your-library-is-kept)
-13. [Keyboard shortcuts](#keyboard-shortcuts)
-14. [Problems and fixes](#problems-and-fixes)
-15. [Feedback](#feedback)
+10. [Updates](#updates)
+11. [Using BookHeart with a screen reader](#using-bookheart-with-a-screen-reader)
+12. [When a book's files move](#when-a-books-files-move)
+13. [Where your library is kept](#where-your-library-is-kept)
+14. [Keyboard shortcuts](#keyboard-shortcuts)
+15. [Problems and fixes](#problems-and-fixes)
+16. [Feedback](#feedback)
 
 ## Installing BookHeart
 
@@ -124,10 +125,10 @@ You don't need the buttons once you know the shortcuts. These work from anywhere
 | Keys | What it does |
 | --- | --- |
 | Alt+P | Play or pause |
-| Alt+Comma | Skip back |
-| Alt+Period | Skip forward |
-| Alt+Left arrow | Previous chapter |
-| Alt+Right arrow | Next chapter |
+| Alt+Left arrow | Skip back |
+| Alt+Right arrow | Skip forward |
+| Ctrl+Left arrow | Previous chapter |
+| Ctrl+Right arrow | Next chapter |
 | Alt+I | Where am I? |
 
 **Where am I?** tells you the chapter you're in, how far into it you are, how much of the book is left at the speed you're listening at, and whether it's playing or paused.
@@ -163,9 +164,9 @@ Each book has its own bookmarks.
 
 BookHeart has default settings for speed, volume and how far the skip buttons jump. Every book uses them until you give a book its own.
 
-- **Speed** goes from 0.5 (half speed) to 3 (three times as fast). The voice stays at its normal pitch however fast you go. **Ctrl+]** speeds up and **Ctrl+[** slows down, in small steps.
+- **Speed** goes from 0.5 (half speed) to 3 (three times as fast). The voice stays at its normal pitch however fast you go. **Ctrl+Up arrow** speeds up and **Ctrl+Down arrow** slows down, in small steps.
 - **Volume** goes from 0 to 300 percent. Anything over 100 is a boost for quiet recordings. BookHeart gently holds back the loudest parts so they don't crackle, but a very large boost on a noisy recording can still sound rough. **Alt+Up arrow** and **Alt+Down arrow** change it in steps of 10.
-- **Skip amount** is how far Alt+Comma and Alt+Period jump: anywhere from 5 seconds to 5 minutes.
+- **Skip amount** is how far Alt+Left arrow and Alt+Right arrow jump: anywhere from 5 seconds to 5 minutes.
 
 When you change the speed or volume with the keys while a book is open, that book remembers it. So you can have a slow narrator at 1.4 and a fast one at 1.1, and each book plays at its own speed when you go back to it.
 
@@ -187,9 +188,26 @@ Open Settings from the File menu, or press **Ctrl+Comma**.
 
 - **Default listening settings.** The speed, volume and skip amount every book uses unless it has its own. If you've given a lot of books their own settings and want to start fresh, choose **Use these for every book** and they'll all go back to the defaults.
 - **Colours.** Follow Windows (light or dark, matching your Windows setting), or always light, or always dark. If you use a Windows high contrast theme, BookHeart always uses its colours.
+- **Updates.** Whether BookHeart checks for new versions by itself, and whether to include test versions. See [Updates](#updates).
 - **Starting up.** Tick "Open the book I was listening to when the app starts" if you'd like BookHeart to open straight to your book instead of the library. It won't start playing until you press Play.
 
 Choose **Save** to keep your changes, or **Cancel** to leave things as they were.
+
+## Updates
+
+BookHeart keeps itself up to date. When it starts, and once a day while it's open, it checks whether there's a new version. If there is, it tells you what's new and asks what you'd like to do:
+
+- **Install now** downloads the new version, checks it arrived intact, and installs it. BookHeart closes for a moment and opens again by itself, with your book where you left it.
+- **Remind me later** asks again next time BookHeart starts, or tomorrow.
+- **Skip this version** stops asking about that version. You'll still be told about the one after it.
+
+BookHeart never interrupts you mid-listen to tell you about an update. If one turns up while a book is playing, it waits until you pause.
+
+You can check whenever you like from **Help → Check for updates**. To stop BookHeart checking by itself, untick "Check for updates when BookHeart starts and once a day" in [Settings](#settings).
+
+Checking for updates means asking GitHub, where BookHeart's releases are kept, for the list of versions. Nothing about you or your books is sent.
+
+If you'd like to help test new versions before they're finished, tick **Include test versions** in Settings. Test versions can have rough edges, so only do this if you don't mind that, and please say if something goes wrong.
 
 ## Using BookHeart with a screen reader
 
@@ -230,12 +248,12 @@ These work from anywhere in BookHeart. Press **F1** to see them inside the progr
 | Keys | What it does |
 | --- | --- |
 | Alt+P | Play or pause |
-| Alt+Comma | Skip back |
-| Alt+Period | Skip forward |
-| Alt+Left arrow | Previous chapter |
-| Alt+Right arrow | Next chapter |
-| Ctrl+] | Faster |
-| Ctrl+[ | Slower |
+| Alt+Left arrow | Skip back |
+| Alt+Right arrow | Skip forward |
+| Ctrl+Left arrow | Previous chapter |
+| Ctrl+Right arrow | Next chapter |
+| Ctrl+Up arrow | Faster |
+| Ctrl+Down arrow | Slower |
 | Alt+Up arrow | Volume up |
 | Alt+Down arrow | Volume down |
 | Alt+B | Add a bookmark |

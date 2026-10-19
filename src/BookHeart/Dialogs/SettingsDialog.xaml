@@ -25,6 +25,15 @@
         <ComboBox x:Name="ThemeBox" AutomationProperties.Name="Colours" HorizontalAlignment="Left" MinWidth="280" />
         <TextBlock Style="{StaticResource MutedPara}" FontSize="16" Margin="0,6,0,0">When Windows high contrast is on, its colours are always used.</TextBlock>
 
+        <TextBlock Style="{StaticResource H2}" Margin="0,24,0,8" Text="Updates" />
+        <CheckBox x:Name="CheckUpdatesBox" VerticalContentAlignment="Center" Margin="0,0,0,10">
+          <TextBlock TextWrapping="Wrap" Text="Check for updates when BookHeart starts and once a day" />
+        </CheckBox>
+        <CheckBox x:Name="TestVersionsBox" VerticalContentAlignment="Center">
+          <TextBlock TextWrapping="Wrap" Text="Include test versions (for people helping to test BookHeart)" />
+        </CheckBox>
+        <TextBlock Style="{StaticResource MutedPara}" FontSize="16" Margin="0,6,0,0">Checking for updates only asks GitHub for the list of BookHeart versions. Nothing about you or your books is sent. You can always check by hand from Help → Check for updates.</TextBlock>
+
         <TextBlock Style="{StaticResource H2}" Margin="0,24,0,8" Text="Starting up" />
         <CheckBox x:Name="OpenLastBox" VerticalContentAlignment="Center">
           <TextBlock TextWrapping="Wrap" Text="Open the book I was listening to when the app starts" />

@@ -63,6 +63,7 @@ $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
 if (-not (Test-Path $iscc)) {
     Invoke-Native { choco install innosetup -y --no-progress }
 }
-Invoke-Native { & $iscc "/DAppVersion=$Version" "/DSourceDir=..\publish\installer" installer\BookHeart.iss }
+$numeric = $Version -replace '-.*$', ''
+Invoke-Native { & $iscc "/DAppVersion=$Version" "/DAppNumericVersion=$numeric" "/DSourceDir=..\publish\installer" installer\BookHeart.iss }
 
 Get-ChildItem release | Format-Table Name, Length

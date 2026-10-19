@@ -126,6 +126,13 @@ public sealed class Settings
     public ThemeChoice Theme { get; set; } = ThemeChoice.System;
     /// <summary>Open the book you were last listening to when the app starts.</summary>
     public bool OpenLastBookOnStart { get; set; }
+    /// <summary>Check for a new version at startup and once a day.</summary>
+    public bool CheckForUpdates { get; set; } = true;
+    /// <summary>Also offer test versions (pre-releases). For testers.</summary>
+    public bool IncludeTestVersions { get; set; }
+    public DateTimeOffset? LastUpdateCheck { get; set; }
+    /// <summary>A version you chose to skip; it isn't offered again, but anything newer is.</summary>
+    public string? SkippedVersion { get; set; }
 
     public double SpeedFor(BookEntry? b) => Math.Clamp(b?.Audio.Speed ?? Speed, MinSpeed, MaxSpeed);
     public int VolumeFor(BookEntry? b) => Math.Clamp(b?.Audio.Volume ?? Volume, 0, MaxVolume);
