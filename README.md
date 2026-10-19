@@ -84,7 +84,9 @@ dotnet run --project src/BookHeart
 
 `pwsh build/build.ps1` runs the tests and builds the installer and portable zip into `release/`. It uses [Inno Setup](https://jrsoftware.org/isinfo.php) for the installer. GitHub Actions runs it on every push.
 
-To make a release: set the version in `Directory.Build.props`, write `release-notes/v<version>.md`, then run the **Release** workflow from the Actions tab with that version number. The **Delete release** workflow removes a release and its tag.
+Releases go out in two stages. Test versions come first, numbered like `0.2.0-beta.1`, `0.2.0-beta.2`. They're published as pre-releases, so only testers who turn on **Include test versions** in Settings are offered them. When a version is ready, the same code is released as a stable version like `0.2.0`, which everyone gets.
+
+To make either kind: set the version in `Directory.Build.props`, write `release-notes/v<version>.md`, then run the **Release** workflow from the Actions tab with that version number. A version with a dash in it is published as a test version automatically. The **Delete release** and **Delete branch** workflows tidy up afterwards.
 
 The code is in three parts: `src/BookHeart.Core` (the library file, finding books in folders, chapters, sorting and formatting, with no Windows code, so a web version can reuse it), `src/BookHeart` (the Windows app in C# and WPF, using NAudio for playback and SoundTouch for speed), and `tests/BookHeart.Core.Tests`. The installer script is `installer/BookHeart.iss` and the manual is `docs/manual.md`. The app's name is set in `Directory.Build.props` and `installer/BookHeart.iss`.
 
