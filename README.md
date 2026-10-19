@@ -62,6 +62,8 @@ BookHeart doesn't collect anything about you. Your books, places, bookmarks and 
 - A website, and a version that plays in your web browser.
 - BookHeart in more languages.
 
+These are plans, not promises, and they can change. The [roadmap](docs/roadmap.md) has more.
+
 ## Licence
 
 BookHeart is free to use under its [licence agreement](legal/EULA.txt).
