@@ -226,7 +226,7 @@ public partial class MainWindow : Window
             ModifierKeys.Control | ModifierKeys.Shift => key == Key.O ? AddFolder : null,
             ModifierKeys.None => key switch
             {
-                Key.F1 => () => Dialogs.Dialogs.ShowShortcuts(this),
+                Key.F1 => () => OpenBesideProgram(AppInfo.Name + " Manual.html", "manual"),
                 Key.Escape when PlayerShown && !typing => () => ShowLibrary(focus: true),
                 _ => null,
             },

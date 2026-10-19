@@ -98,7 +98,7 @@ internal static class Dialogs
         ("Enter", "In a list: play or open the selected item"),
         ("Delete", "In a list: remove the selected book or bookmark"),
         ("Applications key", "In the book list: more actions for the selected book"),
-        ("F1", "This list of shortcuts"),
+        ("F1", "The user manual"),
     ];
 
     public static void ShowShortcuts(Window owner)

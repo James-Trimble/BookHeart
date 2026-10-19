@@ -216,8 +216,8 @@ BookHeart works with NVDA, JAWS and Narrator. A few things worth knowing:
 - BookHeart tells your screen reader what happened after almost everything you do: "Paused at 1 hour 4 minutes", "Forward 30 seconds", "Bookmark added", and so on. The same message also appears in the line at the bottom of the window, if you want to read it again.
 - The lists (books, chapters, bookmarks, and the file order list) are ordinary lists. Tab moves into a list and Tab again moves out of it. Inside, use the arrow keys, Home and End.
 - The sliders read their value in words rather than a bare number.
-- Press **Alt** or **F10** to get to the menu bar. Everything in BookHeart is in the menus, along with its shortcut.
-- Press **F1** at any time for the full list of keyboard shortcuts. This manual is in the Help menu too, under **User manual**.
+- Press **Alt** or **F10** to get to the menu bar. Everything in BookHeart is in the menus, along with its shortcut. Tab doesn't go into the menu bar; it moves between the things on the screen.
+- Press **F1** at any time to open this manual. The full list of keyboard shortcuts is in the Help menu, under **Keyboard shortcuts**.
 
 **Media keys.** The play/pause, next and previous keys on your keyboard or headphones control BookHeart even when its window isn't in front. Next and previous move by chapter, or skip if the book has no chapters. BookHeart also shows up in the Windows media controls (the box that appears when you change the volume), with the book and chapter that's playing.
 
@@ -241,7 +241,7 @@ Everything BookHeart remembers (your books, places, bookmarks and settings) is i
 
 ## Keyboard shortcuts
 
-These work from anywhere in BookHeart. Press **F1** to see them inside the program.
+These work from anywhere in BookHeart. To see them inside the program, choose **Help → Keyboard shortcuts**.
 
 ### Listening
 
@@ -272,7 +272,7 @@ These work from anywhere in BookHeart. Press **F1** to see them inside the progr
 | Ctrl+O | Add books |
 | Ctrl+Shift+O | Add a folder of books |
 | Ctrl+Comma | Settings |
-| F1 | Keyboard shortcuts |
+| F1 | This manual |
 | Alt or F10 | Menu bar |
 
 ### In lists

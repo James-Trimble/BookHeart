@@ -7,7 +7,8 @@
         Background="{DynamicResource Bg}" Foreground="{DynamicResource Ink}"
         FontFamily="{StaticResource BodyFont}" FontSize="20">
   <DockPanel>
-    <Menu x:Name="MainMenu" DockPanel.Dock="Top">
+    <!-- Reached with Alt or F10, like other Windows programs, not with Tab. -->
+    <Menu x:Name="MainMenu" DockPanel.Dock="Top" KeyboardNavigation.TabNavigation="None">
       <MenuItem Header="_File">
         <MenuItem x:Name="MenuAddBooks" Header="_Add books…" InputGestureText="Ctrl+O" />
         <MenuItem x:Name="MenuAddFolder" Header="Add a _folder of books…" InputGestureText="Ctrl+Shift+O" />
@@ -39,8 +40,8 @@
         <MenuItem x:Name="MenuNowPlaying" Header="_Now playing" InputGestureText="Ctrl+2" />
       </MenuItem>
       <MenuItem Header="_Help">
-        <MenuItem x:Name="MenuManual" Header="User _manual" />
-        <MenuItem x:Name="MenuShortcuts" Header="_Keyboard shortcuts" InputGestureText="F1" />
+        <MenuItem x:Name="MenuManual" Header="User _manual" InputGestureText="F1" />
+        <MenuItem x:Name="MenuShortcuts" Header="_Keyboard shortcuts" />
         <MenuItem x:Name="MenuDataFolder" Header="Open _data folder" />
         <Separator />
         <MenuItem x:Name="MenuUpdates" Header="Check for _updates…" />

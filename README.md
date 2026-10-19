@@ -37,7 +37,7 @@ The first time you run it, Windows may say it "protected your PC", because BookH
 
 ## Learning to use it
 
-The [user manual](docs/manual.md) explains everything, and it comes with BookHeart too (Help → User manual). Inside the program, press **F1** for the list of keyboard shortcuts.
+The [user manual](docs/manual.md) explains everything, and it comes with BookHeart too (Help → User manual). Inside the program, press **F1** to open it, or choose Help → Keyboard shortcuts for the list of shortcuts.
 
 The ones you'll use most:
 
