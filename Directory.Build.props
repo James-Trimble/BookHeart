@@ -2,7 +2,7 @@
   <!-- The app's name and version live here. The installer script (installer/BookHeart.iss) repeats the name. -->
   <PropertyGroup>
     <AppName>BookHeart</AppName>
-    <Version>0.2.0-beta.3</Version>
+    <Version>0.2.0-beta.4</Version>
     <Authors>James Trimble</Authors>
     <Company>James Trimble</Company>
     <Copyright>Copyright © 2026 James Trimble</Copyright>

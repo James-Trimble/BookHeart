@@ -19,6 +19,8 @@ internal static class Dialogs
         dialog.SetResourceReference(Control.ForegroundProperty, "Ink");
         dialog.FontFamily = (System.Windows.Media.FontFamily)Application.Current.Resources["BodyFont"];
         dialog.FontSize = 20;
+        // Arrow keys stay inside the control you're on; Tab moves between controls.
+        KeyboardNavigation.SetDirectionalNavigation(dialog, KeyboardNavigationMode.None);
         dialog.KeyDown += (_, e) => { if (e.Key == Key.Escape) { e.Handled = true; dialog.Close(); } };
     }
 
