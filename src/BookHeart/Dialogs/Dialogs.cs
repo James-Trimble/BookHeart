@@ -130,7 +130,9 @@ internal static class Dialogs
         var where = AppInfo.IsPortable ? "Portable copy. Your library is kept next to the program." : "Your library is kept in your user folder.";
         Ask(owner, "About " + AppInfo.Name,
             $"{AppInfo.Name} version {AppInfo.Version}\n\nAn audiobook player made for listening with a keyboard and a screen reader.\n\n" +
-            $"Developed by {AppInfo.Developer}.\n{AppInfo.Copyright}\n\n{where}",
+            $"Developed by {AppInfo.Developer}.\n{AppInfo.Copyright}. All rights reserved.\n\n" +
+            "Use of this program is covered by the licence agreement in the Help menu. " +
+            "It includes open-source components listed under Third-party notices.\n\n" + where,
             "Close");
     }
 }

@@ -157,7 +157,9 @@ public partial class MainWindow : Window
         MenuLibrary.Click += (_, _) => ShowLibrary(focus: true);
         MenuNowPlaying.Click += (_, _) => ShowPlayer(focus: true);
 
-        MenuManual.Click += (_, _) => OpenManual();
+        MenuManual.Click += (_, _) => OpenBesideProgram(AppInfo.Name + " Manual.html", "manual");
+        MenuLicense.Click += (_, _) => OpenBesideProgram("EULA.txt", "licence agreement");
+        MenuNotices.Click += (_, _) => OpenBesideProgram("THIRD-PARTY-NOTICES.txt", "third-party notices");
         MenuShortcuts.Click += (_, _) => Dialogs.Dialogs.ShowShortcuts(this);
         MenuDataFolder.Click += (_, _) =>
         {
@@ -234,12 +236,13 @@ public partial class MainWindow : Window
         }
     }
 
-    private void OpenManual()
+    /// <summary>Opens a document that ships next to the program, like the manual or the licence agreement.</summary>
+    private void OpenBesideProgram(string fileName, string what)
     {
-        var manual = Path.Combine(AppContext.BaseDirectory, AppInfo.Name + " Manual.html");
-        if (!File.Exists(manual)) { _say.Say("The manual wasn't found next to the program. Try installing BookHeart again."); return; }
-        try { Process.Start(new ProcessStartInfo(manual) { UseShellExecute = true }); }
-        catch (Exception ex) { _say.Say("The manual couldn't be opened: " + ex.Message); }
+        var path = Path.Combine(AppContext.BaseDirectory, fileName);
+        if (!File.Exists(path)) { _say.Say($"The {what} wasn't found next to the program. Try installing {AppInfo.Name} again."); return; }
+        try { Process.Start(new ProcessStartInfo(path) { UseShellExecute = true }); }
+        catch (Exception ex) { _say.Say($"The {what} couldn't be opened: " + ex.Message); }
     }
 
     private void OpenSettings()

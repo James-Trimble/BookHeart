@@ -52,4 +52,10 @@ The app's name is set in two places: `Directory.Build.props` and `installer/Book
 - Automatic updates.
 - The app itself in more languages. The installer already speaks seventeen.
 
-BookHeart is by James Trimble.
+## Licence
+
+BookHeart is copyright © 2026 James Trimble. All rights reserved.
+
+The source code is here to be read, not reused. You may not copy, modify, distribute or build on it without written permission. See [LICENSE.txt](LICENSE.txt).
+
+The program is free to use under the [end user licence agreement](legal/EULA.txt). It includes open-source components under their own licences, listed in [legal/THIRD-PARTY-NOTICES.txt](legal/THIRD-PARTY-NOTICES.txt).

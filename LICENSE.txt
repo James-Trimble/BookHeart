@@ -1,0 +1,16 @@
+BookHeart
+Copyright (c) 2026 James Trimble. All rights reserved.
+
+This source code is the property of James Trimble. It is shared so that it can
+be read, not reused.
+
+No licence is granted to copy, modify, merge, publish, distribute, sublicense,
+sell, or create derivative works from this source code or any part of it, in
+any form, without prior written permission from James Trimble. Viewing the code
+on GitHub does not give you any of these rights.
+
+To use the BookHeart program itself, see the BookHeart End User Licence
+Agreement in legal/EULA.txt.
+
+BookHeart includes open-source components that are covered by their own
+licences, not by this notice. They are listed in legal/THIRD-PARTY-NOTICES.txt.

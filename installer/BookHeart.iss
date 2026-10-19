@@ -43,6 +43,7 @@ UsePreviousLanguage=no
 ChangesAssociations=yes
 CloseApplications=yes
 RestartApplications=no
+LicenseFile=..\legal\EULA.txt
 SetupIconFile=..\src\BookHeart\Assets\app.ico
 UninstallDisplayIcon={app}\{#AppExe}
 UninstallDisplayName={#AppName}
@@ -82,7 +83,7 @@ Name: "assocm4b"; Description: "{cm:AssocM4b}"; GroupDescription: "{cm:AssocGrou
 Name: "assocaudio"; Description: "{cm:AssocAudio}"; GroupDescription: "{cm:AssocGroup}"; Flags: unchecked
 
 [Files]
-Source: "{#SourceDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#SourceDir}\*"; DestDir: "{app}"; Excludes: "*.pdb"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{autoprograms}\{#AppName}"; Filename: "{app}\{#AppExe}"

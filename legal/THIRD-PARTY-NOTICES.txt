@@ -1,0 +1,75 @@
+BookHeart third-party notices
+
+BookHeart is copyright (c) 2026 James Trimble, all rights reserved. It includes
+the open-source components below, which are licensed under their own terms.
+Those terms apply to the components only, not to the rest of BookHeart.
+
+
+================================================================================
+SoundTouch.Net
+Copyright (c) Olaf Woudenberg 2011-2019
+Based on the SoundTouch library by Olli Parviainen
+https://github.com/owoudenberg/soundtouch.net
+Licence: GNU Lesser General Public License, version 2.1 or later
+================================================================================
+
+SoundTouch.Net changes the playback speed without changing the pitch. It is
+included unmodified, as the separate file SoundTouch.Net.dll, so you can replace
+it with your own build of the library. Its source code is available from the
+address above. The full text of the licence is in LGPL-2.1.txt, which comes with
+BookHeart.
+
+This library is free software; you can redistribute it and/or modify it under
+the terms of the GNU Lesser General Public License as published by the Free
+Software Foundation; either version 2.1 of the License, or (at your option) any
+later version. This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+for more details.
+
+
+================================================================================
+NAudio
+Copyright 2020 Mark Heath
+https://github.com/naudio/NAudio
+Licence: MIT
+================================================================================
+
+
+================================================================================
+NAudio.Vorbis and NVorbis
+Copyright (c) 2020 Andrew Ward
+https://github.com/naudio/Vorbis
+https://github.com/NVorbis/NVorbis
+Licence: MIT
+================================================================================
+
+
+================================================================================
+.NET and Windows Presentation Foundation (WPF)
+Copyright (c) .NET Foundation and Contributors
+https://github.com/dotnet/runtime
+https://github.com/dotnet/wpf
+Licence: MIT
+================================================================================
+
+
+The MIT licence, which applies to each of the three entries above with its own
+copyright line:
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

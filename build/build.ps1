@@ -45,7 +45,7 @@ Test-Starts "publish/portable/$name.exe"
 # Portable zip: the program, the marker that keeps data beside it, and a short read-me.
 $portable = "publish/portable-zip/$name"
 New-Item -ItemType Directory $portable -Force | Out-Null
-Copy-Item "publish/portable/$name.exe" $portable
+Get-ChildItem publish/portable -Exclude *.pdb | Copy-Item -Destination $portable
 Copy-Item "publish/installer/$name Manual.html" $portable
 Set-Content "$portable/$name.portable" "This file makes $name keep its library in the Data folder next to it. Delete it to use your user folder instead."
 Set-Content "$portable/Read me.txt" @"

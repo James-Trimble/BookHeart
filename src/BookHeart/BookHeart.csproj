@@ -19,6 +19,28 @@
     <Resource Include="Assets\app.ico" />
   </ItemGroup>
 
+  <!-- The licence agreement and third-party notices ship next to the program. -->
+  <ItemGroup>
+    <Content Include="..\..\legal\EULA.txt;..\..\legal\THIRD-PARTY-NOTICES.txt;..\..\legal\LGPL-2.1.txt">
+      <Link>%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+  </ItemGroup>
+
+  <!--
+    SoundTouch.Net is LGPL-licensed, so it must stay a separate file people can replace,
+    even in the single-file portable build.
+  -->
+  <Target Name="KeepLgplLibrarySeparate" AfterTargets="ComputeResolvedFilesToPublishList">
+    <ItemGroup>
+      <ResolvedFileToPublish Condition="'%(ResolvedFileToPublish.Filename)' == 'SoundTouch.Net'">
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
+
   <ItemGroup>
     <PackageReference Include="NAudio" Version="2.2.1" />
     <PackageReference Include="NAudio.Vorbis" Version="1.5.0" />

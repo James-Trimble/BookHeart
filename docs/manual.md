@@ -26,7 +26,7 @@ This manual covers version 0.1.
 
 There are two downloads. Pick one.
 
-**The installer** (`BookHeart-0.1.0-Setup.exe`) is the usual choice. Run it and it will ask you:
+**The installer** (the file ending in `Setup.exe`) is the usual choice. Run it and it will ask you:
 
 - which language to use for the installer itself
 - whether to install for just you or for everyone who uses the computer (everyone needs an administrator password)
@@ -34,9 +34,11 @@ There are two downloads. Pick one.
 - whether you want a desktop shortcut
 - whether `.m4b` audiobook files should open in BookHeart when you double-click them, and whether other audio files like `.mp3` should too. The second one is off to start with, since most people want their music to keep opening in their music player.
 
+Before it installs anything, the installer shows the BookHeart licence agreement, and you'll need to accept it to carry on. You can read it again any time from Help → Licence agreement.
+
 When it's done you'll find BookHeart in the Start menu. To remove it, go to Settings, then Apps, find BookHeart, and choose Uninstall. Your library isn't deleted when you uninstall, so if you install again later, your books and places are still there.
 
-**The portable copy** (`BookHeart-0.1.0-Portable.zip`) doesn't install anything. Unzip it wherever you like, even onto a USB stick, and run `BookHeart.exe`. It keeps your library in a folder called `Data` right next to the program, so you can carry the whole thing between computers. The portable copy doesn't add Start menu entries or change which program opens your files.
+**The portable copy** (the file ending in `Portable.zip`) doesn't install anything. Unzip it wherever you like, even onto a USB stick, and run `BookHeart.exe`. It keeps your library in a folder called `Data` right next to the program, so you can carry the whole thing between computers. The portable copy doesn't add Start menu entries or change which program opens your files.
 
 You need Windows 10 (version 1809 or newer) or Windows 11, 64-bit.
 

@@ -43,6 +43,8 @@
         <MenuItem x:Name="MenuShortcuts" Header="_Keyboard shortcuts" InputGestureText="F1" />
         <MenuItem x:Name="MenuDataFolder" Header="Open _data folder" />
         <Separator />
+        <MenuItem x:Name="MenuLicense" Header="_Licence agreement" />
+        <MenuItem x:Name="MenuNotices" Header="_Third-party notices" />
         <MenuItem x:Name="MenuAbout" Header="_About" />
       </MenuItem>
     </Menu>

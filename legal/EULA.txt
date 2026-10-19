@@ -1,0 +1,93 @@
+BOOKHEART END USER LICENCE AGREEMENT
+
+Copyright (c) 2026 James Trimble. All rights reserved.
+
+Please read this agreement before installing or using BookHeart. By installing,
+copying or using BookHeart you agree to it. If you don't agree, don't install
+or use BookHeart.
+
+1. Who this agreement is between
+
+This agreement is between you and James Trimble ("the author"), who wrote and
+owns BookHeart. "BookHeart" means the program, its installer, its manual and
+any updates the author provides.
+
+2. What you may do
+
+The author gives you a personal, non-exclusive, non-transferable licence to
+install and use BookHeart, free of charge, on any computers you own or use, for
+your own listening.
+
+3. What you may not do
+
+Unless the author agrees in writing, you may not:
+
+ a. sell, rent, lend, or charge anyone for BookHeart;
+ b. share copies of BookHeart, or put it on a website, file-sharing service or
+    other place for others to download. Point people to the official download
+    page instead;
+ c. modify, translate, or make other programs based on BookHeart;
+ d. decompile, disassemble or otherwise reverse engineer BookHeart, except
+    where the law allows it no matter what this agreement says, or where a
+    third-party licence described in section 5 allows it;
+ e. remove or change any copyright notice, trademark or licence notice in
+    BookHeart.
+
+4. Ownership
+
+BookHeart is licensed to you, not sold. The author keeps all rights, title and
+ownership in BookHeart, including copyright and the BookHeart name. Anything
+not expressly granted in this agreement is reserved by the author.
+
+5. Third-party components
+
+BookHeart includes open-source components made by other people. They are
+licensed to you under their own licences, which are listed in the file
+THIRD-PARTY-NOTICES.txt that comes with BookHeart. Nothing in this agreement
+limits the rights those licences give you.
+
+In particular, BookHeart uses the SoundTouch.Net library, which is covered by
+the GNU Lesser General Public License, version 2.1. It is included as a separate
+file, SoundTouch.Net.dll. You may replace that file with a modified version of
+the library, and you may reverse engineer BookHeart as far as is needed to
+debug such modifications.
+
+6. Your files and privacy
+
+BookHeart plays audio files that are already on your computer. It does not
+upload, copy or change them. BookHeart does not collect personal information
+and does not send anything over the internet. Your library, places, bookmarks
+and settings are stored only on your computer.
+
+You are responsible for having the right to listen to the audiobooks you use
+with BookHeart.
+
+7. No warranty
+
+BookHeart is provided "as is", without warranty of any kind, express or
+implied, including the implied warranties of merchantability, fitness for a
+particular purpose and non-infringement. The author does not promise that
+BookHeart will be free of errors or will work without interruption.
+
+8. Limitation of liability
+
+To the fullest extent the law allows, the author will not be liable for any
+damages of any kind arising from your use of, or inability to use, BookHeart,
+including loss of data, even if the author has been told such damages are
+possible. Some places don't allow these limits, so they may not all apply to
+you.
+
+9. Ending this agreement
+
+This agreement lasts until it ends. It ends automatically if you break any of
+its terms. You can end it at any time by uninstalling BookHeart and deleting
+all copies. When it ends, you must stop using BookHeart and delete it.
+
+10. Changes
+
+Later versions of BookHeart may come with an updated agreement. The agreement
+that comes with a version applies to that version.
+
+11. Contact
+
+Questions about this agreement can be sent to James Trimble.
