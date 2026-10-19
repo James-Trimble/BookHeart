@@ -20,8 +20,8 @@ AppName={#AppName}
 AppVersion={#AppVersion}
 AppVerName={#AppName} {#AppVersion}
 AppPublisher={#AppPublisher}
-AppPublisherURL=https://github.com/James-Trimble/Audiobook-Player
-AppSupportURL=https://github.com/James-Trimble/Audiobook-Player/issues
+AppPublisherURL=https://github.com/James-Trimble/BookHeart
+AppSupportURL=https://github.com/James-Trimble/BookHeart/issues
 AppCopyright=Copyright © 2026 {#AppPublisher}
 VersionInfoVersion={#AppVersion}
 VersionInfoCompany={#AppPublisher}
@@ -43,7 +43,7 @@ UsePreviousLanguage=no
 ChangesAssociations=yes
 CloseApplications=yes
 RestartApplications=no
-SetupIconFile=..\src\AudiobookPlayer\Assets\app.ico
+SetupIconFile=..\src\BookHeart\Assets\app.ico
 UninstallDisplayIcon={app}\{#AppExe}
 UninstallDisplayName={#AppName}
 OutputDir=..\release
@@ -87,6 +87,7 @@ Source: "{#SourceDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs 
 [Icons]
 Name: "{autoprograms}\{#AppName}"; Filename: "{app}\{#AppExe}"
 Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExe}"; Tasks: desktopicon
+Name: "{autoprograms}\{#AppName} Manual"; Filename: "{app}\{#AppName} Manual.html"
 
 [Registry]
 ; The file type BookHeart opens. Listing it under OpenWithProgids puts BookHeart in every

@@ -20,12 +20,15 @@ Write-Host "Building $name $Version"
 Remove-Item publish, release -Recurse -Force -ErrorAction SilentlyContinue
 New-Item -ItemType Directory release | Out-Null
 
-Invoke-Native { dotnet test tests/AudiobookPlayer.Core.Tests -c Release }
+Invoke-Native { dotnet test tests/BookHeart.Core.Tests -c Release }
 
-$project = 'src/AudiobookPlayer/AudiobookPlayer.csproj'
+$project = 'src/BookHeart/BookHeart.csproj'
 Invoke-Native { dotnet publish $project -c Release -r win-x64 --self-contained "-p:Version=$Version" -o publish/installer }
 Invoke-Native { dotnet publish $project -c Release -r win-x64 --self-contained "-p:Version=$Version" `
     -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -o publish/portable }
+
+# The manual, as a web page beside the program.
+& "$PSScriptRoot/manual.ps1" -Output "publish/installer/$name Manual.html" -Version $Version
 
 function Test-Starts([string]$Exe) {
     $p = Start-Process -FilePath $Exe -ArgumentList '--smoke-test' -PassThru
@@ -43,11 +46,12 @@ Test-Starts "publish/portable/$name.exe"
 $portable = "publish/portable-zip/$name"
 New-Item -ItemType Directory $portable -Force | Out-Null
 Copy-Item "publish/portable/$name.exe" $portable
+Copy-Item "publish/installer/$name Manual.html" $portable
 Set-Content "$portable/$name.portable" "This file makes $name keep its library in the Data folder next to it. Delete it to use your user folder instead."
 Set-Content "$portable/Read me.txt" @"
 $name $Version, portable copy
 
-Run $name.exe. Nothing needs installing, and your library, places and bookmarks are kept in the
+Run $name.exe. "$name Manual.html" explains everything it does. Nothing needs installing, and your library, places and bookmarks are kept in the
 Data folder next to it, so you can carry the whole folder on a USB stick.
 
 To install $name with Start menu and desktop shortcuts and file associations, use $name-$Version-Setup.exe instead.
