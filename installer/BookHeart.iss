@@ -136,5 +136,6 @@ Root: HKA; Subkey: "Software\Classes\Applications\{#AppExe}\SupportedTypes"; Val
 
 [Run]
 Filename: "{app}\{#AppExe}"; Description: "{cm:LaunchProgram,{#AppName}}"; Flags: nowait postinstall skipifsilent
-; When BookHeart updates itself, the installer runs silently and opens BookHeart again afterwards.
-Filename: "{app}\{#AppExe}"; Parameters: "--updated"; Flags: nowait runasoriginaluser; Check: WizardSilent
+; When BookHeart updates itself, the installer runs silently. BookHeart starts a helper that reopens it
+; afterwards; this is a backup. Only one copy of BookHeart runs, so it never opens twice.
+Filename: "{app}\{#AppExe}"; Flags: nowait runasoriginaluser; Check: WizardSilent

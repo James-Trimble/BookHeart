@@ -133,6 +133,12 @@ public sealed class Settings
     public DateTimeOffset? LastUpdateCheck { get; set; }
     /// <summary>A version you chose to skip; it isn't offered again, but anything newer is.</summary>
     public string? SkippedVersion { get; set; }
+    /// <summary>The version that last ran, so BookHeart can say when it has been updated.</summary>
+    public string? LastVersionRun { get; set; }
+    /// <summary>Set just before installing an update: "library" or "player", the screen to come back to.</summary>
+    public string? ResumeView { get; set; }
+    /// <summary>Set just before installing an update: the book that was open, if any.</summary>
+    public string? ResumeBookKey { get; set; }
 
     public double SpeedFor(BookEntry? b) => Math.Clamp(b?.Audio.Speed ?? Speed, MinSpeed, MaxSpeed);
     public int VolumeFor(BookEntry? b) => Math.Clamp(b?.Audio.Volume ?? Volume, 0, MaxVolume);

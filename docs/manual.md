@@ -197,7 +197,7 @@ Choose **Save** to keep your changes, or **Cancel** to leave things as they were
 
 BookHeart keeps itself up to date. When it starts, and once a day while it's open, it checks whether there's a new version. If there is, it tells you what's new and asks what you'd like to do:
 
-- **Install now** downloads the new version, checks it arrived intact, and installs it. BookHeart closes for a moment and opens again by itself, with your book where you left it.
+- **Install now** downloads the new version, checks it arrived intact, and installs it. BookHeart closes for a moment and opens again by itself, on the screen you were on, and tells you it has been updated.
 - **Remind me later** asks again next time BookHeart starts, or tomorrow.
 - **Skip this version** stops asking about that version. You'll still be told about the one after it.
 

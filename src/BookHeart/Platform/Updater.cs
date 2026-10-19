@@ -87,7 +87,16 @@ internal static class Updater
         bool allUsers = AppContext.BaseDirectory.StartsWith(programFiles, StringComparison.OrdinalIgnoreCase);
         // The installer remembers the folder and choices from last time. Installs for everyone ask Windows for permission.
         var args = "/SILENT /SUPPRESSMSGBOXES /NORESTART /CLOSEAPPLICATIONS " + (allUsers ? "/ALLUSERS" : "/CURRENTUSER");
-        Process.Start(new ProcessStartInfo(setup, args) { UseShellExecute = true });
+        var installer = Process.Start(new ProcessStartInfo(setup, args) { UseShellExecute = true })
+                        ?? throw new InvalidOperationException("The installer didn't start.");
+
+        // A small helper waits for the installer to finish, then opens the new version.
+        RunHiddenScript("reopen-after-install.ps1", """
+            param([int]$InstallerId, [string]$Exe)
+            Wait-Process -Id $InstallerId -ErrorAction SilentlyContinue
+            Start-Sleep -Seconds 1
+            if (Test-Path -LiteralPath $Exe) { Start-Process -FilePath $Exe }
+            """, "-InstallerId", installer.Id.ToString(), "-Exe", Path.Combine(AppContext.BaseDirectory, AppInfo.Name + ".exe"));
     }
 
     private static void StartPortableUpdate(string zip)
@@ -103,8 +112,7 @@ internal static class Updater
 
         // A small script waits for BookHeart to close, copies the new files over (leaving the Data folder alone),
         // and opens the new version.
-        var script = Path.Combine(Path.GetTempPath(), AppInfo.Name + "-update", "update-portable.ps1");
-        File.WriteAllText(script, """
+        RunHiddenScript("update-portable.ps1", """
             param([int]$ProcessId, [string]$Source, [string]$Target, [string]$Exe)
             Wait-Process -Id $ProcessId -ErrorAction SilentlyContinue
             for ($try = 0; $try -lt 10; $try++) {
@@ -114,16 +122,18 @@ internal static class Updater
                     break
                 } catch { Start-Sleep -Milliseconds 500 }
             }
-            Start-Process -FilePath (Join-Path $Target $Exe) -ArgumentList '--updated'
-            """);
-        var psi = new ProcessStartInfo("powershell.exe")
-        {
-            UseShellExecute = false,
-            CreateNoWindow = true,
-            WindowStyle = ProcessWindowStyle.Hidden,
-        };
-        foreach (var a in new[] { "-NoProfile", "-ExecutionPolicy", "Bypass", "-WindowStyle", "Hidden", "-File", script,
-                     "-ProcessId", Environment.ProcessId.ToString(), "-Source", sourceDir, "-Target", target, "-Exe", exe })
+            Start-Process -FilePath (Join-Path $Target $Exe)
+            """, "-ProcessId", Environment.ProcessId.ToString(), "-Source", sourceDir, "-Target", target, "-Exe", exe);
+    }
+
+    /// <summary>Runs a short PowerShell script in the background, with no window.</summary>
+    private static void RunHiddenScript(string name, string script, params string[] args)
+    {
+        var path = Path.Combine(Path.GetTempPath(), AppInfo.Name + "-update", name);
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+        File.WriteAllText(path, script);
+        var psi = new ProcessStartInfo("powershell.exe") { UseShellExecute = false, CreateNoWindow = true, WindowStyle = ProcessWindowStyle.Hidden };
+        foreach (var a in new[] { "-NoProfile", "-ExecutionPolicy", "Bypass", "-WindowStyle", "Hidden", "-File", path }.Concat(args))
             psi.ArgumentList.Add(a);
         Process.Start(psi);
     }

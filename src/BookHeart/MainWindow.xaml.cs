@@ -25,7 +25,6 @@ public partial class MainWindow : Window
     private readonly Announcer _say;
     private MediaControls? _media;
     private readonly string[] _startupFiles;
-    private readonly bool _justUpdated;
 
     private readonly ObservableCollection<Row> _bookRows = [];
     private readonly ObservableCollection<Row> _bookmarkRows = [];
@@ -35,8 +34,8 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         _store = store;
-        _justUpdated = startupFiles.Contains("--updated");
-        _startupFiles = startupFiles.Where(a => a != "--updated").ToArray();
+        // Older installers passed "--updated"; options like that aren't files to open.
+        _startupFiles = startupFiles.Where(a => !a.StartsWith("--", StringComparison.Ordinal)).ToArray();
         _say = new Announcer(this);
         _say.Announced += m => StatusText.Text = m;
         Title = AppInfo.Name;
@@ -83,9 +82,10 @@ public partial class MainWindow : Window
         ShowLibrary(focus: true);
 
         if (_startupFiles.Length > 0) OpenPaths(_startupFiles, play: true);
-        else if (_justUpdated) WelcomeBackAfterUpdate();
+        else if (RestoreAfterUpdate()) { }
         else if (_store.Settings.OpenLastBookOnStart && _store.LastPlayed is { } last && last.MissingFiles().Count == 0)
             OpenEntry(last, autoplay: false);
+        AnnounceIfUpdated();
         ProbeLibrary();
         StartUpdateChecks();
     }
@@ -103,6 +103,7 @@ public partial class MainWindow : Window
     {
         if (WindowState == WindowState.Minimized) WindowState = WindowState.Normal;
         Activate();
+        paths = paths.Where(a => !a.StartsWith("--", StringComparison.Ordinal)).ToArray();
         if (paths.Length > 0) OpenPaths(paths, play: true);
     }
 

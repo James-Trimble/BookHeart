@@ -95,6 +95,9 @@ public partial class MainWindow
                 break;
             case UpdateChoice.Install when dlg.DownloadedFile is not null:
                 SavePosition();
+                // Remember where you were, to come back to it once the new version opens.
+                _store.Settings.ResumeView = PlayerShown && _book is not null ? "player" : "library";
+                _store.Settings.ResumeBookKey = _book?.Key;
                 _store.Save();
                 try
                 {
@@ -103,17 +106,36 @@ public partial class MainWindow
                 }
                 catch (Exception ex)
                 {
+                    _store.Settings.ResumeView = _store.Settings.ResumeBookKey = null;
+                    _store.Save();
                     _say.Say("The update couldn't be started. " + ex.Message);
                 }
                 break;
         }
     }
 
-    /// <summary>After an update, says so and opens the book you were listening to.</summary>
-    private void WelcomeBackAfterUpdate()
+    /// <summary>After an update, comes back to the screen you were on: your book if it was open, otherwise the library.</summary>
+    private bool RestoreAfterUpdate()
     {
-        if (_store.LastPlayed is { } last && last.MissingFiles().Count == 0) OpenEntry(last, autoplay: false);
+        var s = _store.Settings;
+        if (s.ResumeView is null) return false;
+        var view = s.ResumeView;
+        var book = s.ResumeBookKey is null ? null : _store.Find(s.ResumeBookKey);
+        s.ResumeView = s.ResumeBookKey = null;
+        _store.Save();
+        if (view == "player" && book is not null && book.MissingFiles().Count == 0) OpenEntry(book, autoplay: false);
+        return true;
+    }
+
+    /// <summary>Says so when this is the first run of a newer version, however BookHeart was opened.</summary>
+    private void AnnounceIfUpdated()
+    {
+        var s = _store.Settings;
+        var previous = AppVersion.TryParse(s.LastVersionRun);
+        s.LastVersionRun = AppInfo.Version;
+        _store.Save();
+        if (previous is null || !(Updater.CurrentVersion > previous)) return;
         _say.Say($"{AppInfo.Name} has been updated to version {AppInfo.Version}." +
-                 (_book is not null ? $" {_book.Title} is ready where you left off." : ""));
+                 (_book is not null && PlayerShown ? $" {_book.Title} is ready where you left off." : ""));
     }
 }
