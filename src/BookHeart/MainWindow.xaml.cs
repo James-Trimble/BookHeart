@@ -178,6 +178,8 @@ public partial class MainWindow : Window
     private void OnShortcutKey(object sender, KeyEventArgs e)
     {
         if (MainMenu.IsKeyboardFocusWithin) return;
+        Dialogs.Dialogs.IgnoreArrowsOnButtons(e);
+        if (e.Handled) return;
 
         if (_media is { Available: false })
         {

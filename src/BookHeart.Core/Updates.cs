@@ -120,21 +120,35 @@ public static partial class UpdateFeed
         return newest;
     }
 
-    /// <summary>Turns release notes written in Markdown into plain text that reads well aloud.</summary>
+    /// <summary>
+    /// Turns release notes written in Markdown into plain text that reads well aloud: headings and list
+    /// items each become their own paragraph, with no symbols for a screen reader to read out.
+    /// </summary>
     public static string MarkdownToText(string markdown)
     {
-        var lines = new List<string>();
+        var paragraphs = new List<string>();
+        var current = new List<string>();
+        void Flush()
+        {
+            if (current.Count > 0) paragraphs.Add(string.Join(" ", current));
+            current.Clear();
+        }
         foreach (var raw in markdown.Replace("\r\n", "\n").Split('\n'))
         {
-            var line = raw.TrimEnd();
+            var line = raw.Trim();
+            if (line.Length == 0) { Flush(); continue; }
+            bool startsBlock = Heading().IsMatch(line) || Bullet().IsMatch(line);
             line = Heading().Replace(line, "");
+            line = Bullet().Replace(line, "");
             line = Link().Replace(line, "$1");
             line = Emphasis().Replace(line, "$2");
             line = line.Replace("`", "");
-            line = Bullet().Replace(line, "• ");
-            lines.Add(line);
+            if (startsBlock) Flush();
+            current.Add(line);
+            if (startsBlock && raw.TrimStart().StartsWith('#')) Flush();
         }
-        return Regex.Replace(string.Join("\n", lines), @"\n{3,}", "\n\n").Trim();
+        Flush();
+        return string.Join("\n\n", paragraphs);
     }
 
     private static string? Sha256Of(string? digest) =>

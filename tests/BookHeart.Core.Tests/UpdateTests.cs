@@ -54,7 +54,7 @@ public class UpdateTests
         Assert.Equal("https://e/s.exe", r.Installer!.Url);
         Assert.Equal("cd34", r.Installer.Sha256);
         Assert.Equal("ab12", r.Portable!.Sha256);
-        Assert.Equal("What's changed\n\n• Updates arrive by themselves.\n• See the manual and F1.", r.Notes);
+        Assert.Equal("What's changed\n\nUpdates arrive by themselves.\n\nSee the manual and F1.", r.Notes);
     }
 
     [Fact]
@@ -83,4 +83,14 @@ public class UpdateTests
 
     [Fact]
     public void GarbageFeedGivesNothing() => Assert.Empty(UpdateFeed.Parse("""{ "message": "rate limited" }"""));
+}
+
+public class ReleaseNotesTextTests
+{
+    [Fact]
+    public void ListItemsAndHeadingsBecomeParagraphsWithoutSymbols()
+    {
+        var text = UpdateFeed.MarkdownToText("Intro line\r\nstill intro.\r\n\r\n## What's new\r\n- **One** thing\r\n  wrapped onto two lines.\r\n- Two\r\n");
+        Assert.Equal("Intro line still intro.\n\nWhat's new\n\nOne thing wrapped onto two lines.\n\nTwo", text);
+    }
 }

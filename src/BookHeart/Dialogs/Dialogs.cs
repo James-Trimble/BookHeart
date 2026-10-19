@@ -19,9 +19,20 @@ internal static class Dialogs
         dialog.SetResourceReference(Control.ForegroundProperty, "Ink");
         dialog.FontFamily = (System.Windows.Media.FontFamily)Application.Current.Resources["BodyFont"];
         dialog.FontSize = 20;
-        // Arrow keys stay inside the control you're on; Tab moves between controls.
-        KeyboardNavigation.SetDirectionalNavigation(dialog, KeyboardNavigationMode.None);
+        dialog.PreviewKeyDown += (_, e) => IgnoreArrowsOnButtons(e);
         dialog.KeyDown += (_, e) => { if (e.Key == Key.Escape) { e.Handled = true; dialog.Close(); } };
+    }
+
+    /// <summary>
+    /// Stops the arrow keys moving focus from one button to the next, which WPF does by default. On a
+    /// button or checkbox an arrow key does nothing; Tab moves between controls. Lists, sliders, drop-downs,
+    /// text boxes, tabs and menus aren't buttons, so their arrow keys work as usual.
+    /// </summary>
+    public static void IgnoreArrowsOnButtons(KeyEventArgs e)
+    {
+        if (Keyboard.Modifiers != ModifierKeys.None) return;
+        if (e.Key is not (Key.Up or Key.Down or Key.Left or Key.Right)) return;
+        if (Keyboard.FocusedElement is System.Windows.Controls.Primitives.ButtonBase and not RadioButton) e.Handled = true;
     }
 
     /// <summary>Asks a question with buttons that say what they do. Returns the chosen button's index, or -1 if closed.</summary>

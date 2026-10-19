@@ -5,9 +5,7 @@
         Title="BookHeart" Width="980" Height="900" MinWidth="460" MinHeight="420"
         WindowStartupLocation="CenterScreen" AllowDrop="True" Icon="Assets/app.ico"
         Background="{DynamicResource Bg}" Foreground="{DynamicResource Ink}"
-        FontFamily="{StaticResource BodyFont}" FontSize="20"
-        KeyboardNavigation.DirectionalNavigation="None">
-  <!-- Arrow keys work inside lists, menus, tabs and sliders, but don't jump between controls; Tab does that. -->
+        FontFamily="{StaticResource BodyFont}" FontSize="20">
   <DockPanel>
     <!-- Reached with Alt or F10, like other Windows programs, not with Tab. -->
     <Menu x:Name="MainMenu" DockPanel.Dock="Top" KeyboardNavigation.TabNavigation="None">
