@@ -1,0 +1,1428 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BookHeart web player (prototype)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F3F7FB;
+  --surface: #FFFFFF;
+  --ink: #0A2540;
+  --muted: #3D5570;
+  --primary: #1747B8;
+  --primary-ink: #FFFFFF;
+  --line: #B9C7D8;
+  --focus: #FFD100;
+  --danger: #A61B1B;
+  box-sizing: border-box;
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0A1628;
+    --surface: #13233B;
+    --ink: #F2F6FA;
+    --muted: #B8C8DA;
+    --primary: #FFD100;
+    --primary-ink: #0A1628;
+    --line: #3A5475;
+    --focus: #7FC4FF;
+    --danger: #FF8A8A;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0A1628; --surface: #13233B; --ink: #F2F6FA; --muted: #B8C8DA;
+  --primary: #FFD100; --primary-ink: #0A1628; --line: #3A5475; --focus: #7FC4FF; --danger: #FF8A8A;
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: inherit; }
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Atkinson Hyperlegible", Verdana, "Segoe UI", Arial, sans-serif;
+  font-size: 1.25rem;
+  line-height: 1.5;
+}
+main { max-width: 44rem; margin: 0 auto; padding: 1.5rem 1.25rem 4rem; }
+h1 { font-size: 2.25rem; line-height: 1.15; margin: 0.5rem 0 0.5rem; }
+h2 { font-size: 1.5rem; margin: 2.5rem 0 0.75rem; }
+p { margin: 0 0 1rem; max-width: 38rem; }
+.muted { color: var(--muted); }
+.small { font-size: 1.05rem; }
+button, select, input[type="text"] {
+  font: inherit;
+  color: inherit;
+}
+button {
+  min-height: 3.25rem;
+  padding: 0.6rem 1.1rem;
+  border: 2px solid var(--ink);
+  border-radius: 0.6rem;
+  background: var(--surface);
+  cursor: pointer;
+  font-weight: 700;
+}
+button.primary { background: var(--primary); color: var(--primary-ink); border-color: var(--primary); }
+button.danger { color: var(--danger); border-color: var(--danger); font-weight: 400; }
+button:disabled { opacity: 0.45; cursor: not-allowed; }
+:focus-visible { outline: 4px solid var(--focus); outline-offset: 3px; box-shadow: 0 0 0 7px var(--ink); }
+.visually-hidden {
+  position: absolute !important; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+.now {
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  background: var(--surface);
+  border: 2px solid var(--line);
+  border-radius: 1rem;
+}
+.book-title { font-size: 1.6rem; font-weight: 700; margin: 0; overflow-wrap: anywhere; }
+.chapter-now { margin: 0.25rem 0 0; color: var(--muted); }
+.clock {
+  font-size: clamp(2.5rem, 11vw, 4rem);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  margin: 1rem 0 0;
+  line-height: 1;
+}
+.clock small { font-size: 0.4em; font-weight: 400; color: var(--muted); letter-spacing: 0; }
+.controls { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: stretch; margin-top: 1.25rem; }
+.controls button { flex: 1 1 8rem; }
+#playBtn { flex: 2 1 12rem; font-size: 1.6rem; min-height: 4.5rem; }
+.seek { margin-top: 1.5rem; }
+.seek label { display: block; font-weight: 700; margin-bottom: 0.4rem; }
+input[type="range"] { width: 100%; height: 2.5rem; accent-color: var(--primary); }
+.row { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1.25rem; align-items: end; }
+.field { display: flex; flex-direction: column; gap: 0.35rem; flex: 1 1 12rem; }
+.field label { font-weight: 700; }
+select, input[type="text"] {
+  min-height: 3.25rem;
+  padding: 0.5rem 0.75rem;
+  border: 2px solid var(--ink);
+  border-radius: 0.6rem;
+  background: var(--surface);
+  width: 100%;
+}
+ul.plain, ol.plain { list-style: none; margin: 0; padding: 0; }
+.list li {
+  display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: stretch;
+  padding: 0.6rem 0; border-bottom: 1px solid var(--line);
+}
+.list li .go { flex: 1 1 16rem; text-align: left; font-weight: 400; }
+.list li .go strong { display: block; overflow-wrap: anywhere; }
+.list li.current .go { border-width: 4px; }
+/* library: continue card, recent books, saved copies */
+.resume-card { margin-top: 1rem; }
+.resume-card .controls { margin-top: 1rem; }
+#contBtn { flex: 1 1 100%; font-size: 1.4rem; min-height: 4rem; }
+progress {
+  display: block; width: 100%; height: 0.9rem; margin-top: 0.9rem;
+  accent-color: var(--primary);
+}
+.library-open { margin-top: 1.5rem; }
+.open-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+.open-row button { flex: 1 1 14rem; }
+#orderWrap { margin-top: 2rem; padding: 1.25rem; background: var(--surface); border: 2px solid var(--primary); border-radius: 1rem; }
+#orderWrap h2 { margin-top: 0; }
+#orderWrap h2:focus { outline: none; }
+#orderList li .ordname { flex: 1 1 14rem; align-self: center; overflow-wrap: anywhere; }
+#orderList li button { flex: 0 0 auto; }
+.moveform { flex: 1 1 100%; display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: end; }
+.moveform label { flex: 1 1 100%; font-weight: 700; }
+.moveform input { width: 7rem; min-height: 3.25rem; padding: 0.5rem 0.75rem; border: 2px solid var(--ink); border-radius: 0.6rem; background: var(--surface); font: inherit; color: inherit; }
+#changeOrderBtn { margin-bottom: 0.75rem; }
+.opt { display: flex; gap: 0.75rem; align-items: flex-start; margin-top: 1rem; }
+.opt input[type="checkbox"] { width: 1.75rem; height: 1.75rem; margin: 0.15rem 0 0; flex: none; accent-color: var(--primary); }
+.opt label { font-weight: 700; }
+#keepStatus { margin: 0.75rem 0 0; }
+#clearCopiesBtn { margin-top: 0.75rem; }
+kbd {
+  font: inherit; font-weight: 700; padding: 0 0.35em;
+  border: 2px solid var(--line); border-radius: 0.35rem; background: var(--surface);
+}
+dl.keys { display: grid; grid-template-columns: max-content 1fr; gap: 0.5rem 1.25rem; }
+dl.keys dt, dl.keys dd { margin: 0; }
+@media (prefers-reduced-motion: no-preference) {
+  button { transition: transform 0.08s; }
+  button:active:not(:disabled) { transform: scale(0.97); }
+}
+</style>
+</head>
+<body>
+<main>
+  <h1>Audiobook Player</h1>
+  <p>Your place and your bookmarks are remembered for each book in this browser. Books you have opened are listed here so you can pick up where you stopped. A book can be one file, or a whole set of files that play in order. Your files stay on your computer and are never uploaded.</p>
+
+  <section id="continueWrap" hidden aria-labelledby="contHeading">
+    <h2 id="contHeading" style="margin-top:1.5rem">Continue listening</h2>
+    <div class="now resume-card">
+      <p class="book-title" id="contTitle"></p>
+      <p class="chapter-now" id="contMeta"></p>
+      <progress id="contProgress" max="100" value="0" aria-hidden="true" hidden></progress>
+      <p class="chapter-now" id="contHint" style="margin-bottom:0"></p>
+      <div class="controls">
+        <button id="contBtn" class="primary" type="button" aria-keyshortcuts="Alt+R"></button>
+      </div>
+    </div>
+  </section>
+
+  <div class="library-open">
+    <div class="open-row">
+      <button id="openBtn" class="primary" type="button" aria-keyshortcuts="Alt+O" aria-describedby="openHelp">Open a new audiobook</button>
+      <button id="folderBtn" type="button" aria-describedby="openHelp">Open a whole folder</button>
+    </div>
+    <p id="openHelp" class="muted small" style="margin:0.75rem 0 0">Pick one file, or select several files at once to play them in order.</p>
+  </div>
+  <input id="fileInput" type="file" multiple class="visually-hidden" tabindex="-1" aria-hidden="true"
+         accept=".m4b,.m4a,.mp3,.aac,.ogg,.opus,.wav,.flac,audio/*">
+  <input id="folderInput" type="file" webkitdirectory multiple class="visually-hidden" tabindex="-1" aria-hidden="true">
+
+  <div id="status" role="status" aria-live="polite" class="visually-hidden"></div>
+
+  <section id="orderWrap" hidden aria-labelledby="orderHeading">
+    <h2 id="orderHeading" tabindex="-1">Check the order</h2>
+    <p><span id="orderCount">0</span> files will play in this order. They are sorted by name, with numbers read as numbers. Choose Move to, then type a position number, to send a file straight there. Move up and Move down shift it one step. Your order is remembered for this set.</p>
+    <ol id="orderList" class="plain list"></ol>
+    <div class="controls">
+      <button id="orderGo" class="primary" type="button">Start listening</button>
+      <button id="orderReset" type="button">Sort by name again</button>
+      <button id="orderCancel" type="button">Cancel</button>
+    </div>
+  </section>
+
+  <section id="recentWrap" hidden aria-labelledby="recentHeading">
+    <h2 id="recentHeading" style="margin-top:2rem">Recent books</h2>
+    <ul id="recentList" class="plain list" aria-labelledby="recentHeading"></ul>
+  </section>
+
+  <section id="player" hidden aria-labelledby="nowHeading">
+    <div class="now">
+      <h2 id="nowHeading" class="visually-hidden">Now playing</h2>
+      <p class="book-title" id="bookTitle"></p>
+      <p class="chapter-now" id="chapterNow" hidden></p>
+      <p class="chapter-now" id="qualityNow" hidden></p>
+      <p class="clock" aria-hidden="true"><span id="clockNow">0:00</span> <small>of <span id="clockTotal">0:00</span></small></p>
+
+      <div class="controls">
+        <button id="backBtn" type="button" aria-keyshortcuts="Alt+,">Back 30 seconds</button>
+        <button id="playBtn" class="primary" type="button" aria-keyshortcuts="Alt+P">Play</button>
+        <button id="fwdBtn" type="button" aria-keyshortcuts="Alt+.">Forward 30 seconds</button>
+      </div>
+      <div class="controls">
+        <button id="whereBtn" type="button" aria-keyshortcuts="Alt+I">Where am I?</button>
+        <button id="prevChBtn" type="button" hidden>Previous chapter</button>
+        <button id="nextChBtn" type="button" hidden>Next chapter</button>
+      </div>
+
+      <div class="seek">
+        <label id="seekLabel" for="seek">Position in book</label>
+        <input id="seek" type="range" min="0" max="0" step="1" value="0">
+      </div>
+
+      <div class="seek">
+        <label for="volume">Volume</label>
+        <input id="volume" type="range" min="0" max="300" step="5" value="100" aria-keyshortcuts="Alt+ArrowUp Alt+ArrowDown" aria-describedby="volHelp">
+      </div>
+      <p id="volHelp" class="muted small" style="margin:0.25rem 0 0">Goes up to 300 percent for quiet recordings. Above 100 percent, loud parts may sound distorted.</p>
+      <div class="controls">
+        <button id="volDownBtn" type="button" aria-keyshortcuts="Alt+ArrowDown">Volume down</button>
+        <button id="volUpBtn" type="button" aria-keyshortcuts="Alt+ArrowUp">Volume up</button>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="speed">Speed</label>
+          <select id="speed">
+            <option value="0.75">0.75 times</option>
+            <option value="1" selected>Normal</option>
+            <option value="1.1">1.1 times</option>
+            <option value="1.25">1.25 times</option>
+            <option value="1.5">1.5 times</option>
+            <option value="1.75">1.75 times</option>
+            <option value="2">2 times</option>
+            <option value="2.5">2.5 times</option>
+            <option value="3">3 times</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="skip">Skip amount</label>
+          <select id="skip">
+            <option value="10">10 seconds</option>
+            <option value="30" selected>30 seconds</option>
+            <option value="60">1 minute</option>
+            <option value="300">5 minutes</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <h2 id="bmHeading">Bookmarks</h2>
+    <div class="row" style="margin-top:0">
+      <div class="field" style="flex:3 1 16rem">
+        <label for="bmNote">Bookmark note (optional)</label>
+        <input id="bmNote" type="text" autocomplete="off">
+      </div>
+      <button id="addBmBtn" class="primary" type="button" aria-keyshortcuts="Alt+B">Add bookmark here</button>
+    </div>
+    <p id="bmEmpty" class="muted" style="margin-top:1rem">No bookmarks yet for this book.</p>
+    <ul id="bmList" class="plain list" aria-labelledby="bmHeading"></ul>
+
+    <section id="chSection" hidden aria-labelledby="chHeading">
+      <h2 id="chHeading">Chapters</h2>
+      <button id="changeOrderBtn" type="button" hidden>Change order of files</button>
+      <ol id="chList" class="plain list" aria-labelledby="chHeading"></ol>
+    </section>
+  </section>
+
+  <section aria-labelledby="keepHeading">
+    <h2 id="keepHeading">Resuming books</h2>
+    <p>Browsers do not let a page reopen a file on your computer by itself. By default, choosing a recent book asks you to pick the same file again (or all the files of a set), and it then starts at your saved place. To skip that step, keep a copy of each book inside this browser.</p>
+    <div class="opt">
+      <input id="keepCopy" type="checkbox" aria-describedby="keepHelp">
+      <label for="keepCopy">Keep a copy of each book in this browser for one-tap resume</label>
+    </div>
+    <p id="keepHelp" class="muted small" style="margin:0.5rem 0 0 2.5rem">Each saved book uses storage equal to its file size. The copy stays on this computer.</p>
+    <p id="keepStatus" class="muted small" role="status" aria-live="polite" style="margin-left:2.5rem"></p>
+    <button id="clearCopiesBtn" type="button" class="danger" hidden style="margin-left:2.5rem">Delete all saved copies</button>
+  </section>
+
+  <h2>Keyboard shortcuts</h2>
+  <p>These work anywhere on the page. All controls are also ordinary buttons you can Tab to.</p>
+  <dl class="keys">
+    <dt><kbd>Alt</kbd> + <kbd>P</kbd></dt><dd>Play or pause</dd>
+    <dt><kbd>Alt</kbd> + <kbd>,</kbd></dt><dd>Skip back</dd>
+    <dt><kbd>Alt</kbd> + <kbd>.</kbd></dt><dd>Skip forward</dd>
+    <dt><kbd>Alt</kbd> + <kbd>Up arrow</kbd></dt><dd>Volume up</dd>
+    <dt><kbd>Alt</kbd> + <kbd>Down arrow</kbd></dt><dd>Volume down</dd>
+    <dt><kbd>Alt</kbd> + <kbd>B</kbd></dt><dd>Add a bookmark at the current spot</dd>
+    <dt><kbd>Alt</kbd> + <kbd>I</kbd></dt><dd>Hear where you are in the book</dd>
+    <dt><kbd>Alt</kbd> + <kbd>R</kbd></dt><dd>Resume the book you listened to most recently</dd>
+    <dt><kbd>Alt</kbd> + <kbd>O</kbd></dt><dd>Open a new book</dd>
+  </dl>
+  <p class="muted">Headphone and keyboard media keys also play, pause and skip.</p>
+
+  <audio id="audio" preload="metadata"></audio>
+</main>
+
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const audio = $('audio');
+  const statusEl = $('status');
+  let fileKey = null, objectUrl = null, bookTitle = '';
+  let chapters = [], bookmarks = [];
+  let lastSave = 0, currentChapterIdx = -2, fileSize = 0;
+  let ready = false, pending = null, wantPlay = false, resumingPlay = false;
+  // multi-file books: each file is one chapter
+  let tracks = [], trackIdx = 0, isSet = false, startAt = 0, opening = false;
+  let offsets = [], totalDur = 0, allKnown = false, probeToken = 0;
+  let orderFiles = [];
+
+  // ---------- storage (safe) ----------
+  function sGet(k) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch (e) { return null; } }
+  function sSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+
+  // ---------- time formatting ----------
+  function clock(sec) {
+    sec = Math.max(0, Math.floor(sec || 0));
+    const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+    return h ? `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}` : `${m}:${String(s).padStart(2, '0')}`;
+  }
+  function spoken(sec) {
+    sec = Math.max(0, Math.floor(sec || 0));
+    const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+    const parts = [];
+    if (h) parts.push(h + (h === 1 ? ' hour' : ' hours'));
+    if (m) parts.push(m + (m === 1 ? ' minute' : ' minutes'));
+    if (s || !parts.length) parts.push(s + (s === 1 ? ' second' : ' seconds'));
+    return parts.join(' ');
+  }
+  function announce(msg) {
+    statusEl.textContent = '';
+    setTimeout(() => { statusEl.textContent = msg; }, 60);
+  }
+  function ago(ts) {
+    const d = new Date(ts), n = new Date();
+    const days = Math.round((new Date(n.getFullYear(), n.getMonth(), n.getDate()) - new Date(d.getFullYear(), d.getMonth(), d.getDate())) / 864e5);
+    if (days <= 0) return 'today';
+    if (days === 1) return 'yesterday';
+    if (days < 7) return days + ' days ago';
+    return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: d.getFullYear() !== n.getFullYear() ? 'numeric' : undefined });
+  }
+  function fmtSize(b) {
+    return b >= 1e9 ? (b / 1e9).toFixed(1) + ' GB' : Math.max(1, Math.round(b / 1e6)) + ' MB';
+  }
+
+  // ---------- file helpers ----------
+  const coll = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
+  function natSort(files) { return files.slice().sort((a, b) => coll.compare(a.name, b.name)); }
+  function isAudioFile(f) { return /\.(m4b|m4a|mp3|aac|ogg|opus|wav|flac|mp4)$/i.test(f.name) || (f.type || '').indexOf('audio/') === 0; }
+  function urlFor(file) {
+    const isMp4 = /\.(m4b|m4a|mp4|aac)$/i.test(file.name);
+    return URL.createObjectURL(isMp4 ? new Blob([file], { type: 'audio/mp4' }) : file);
+  }
+  function setKeyFor(files) {
+    const names = natSort(files).map((f) => f.name).join('|');
+    let h = 5381;
+    for (let i = 0; i < names.length; i++) h = ((h << 5) + h + names.charCodeAt(i)) | 0;
+    return 'set:' + files.length + ':' + files.reduce((n, f) => n + f.size, 0) + ':' + (h >>> 0).toString(36);
+  }
+  function setTitle(files) {
+    const names = files.map((f) => f.name.replace(/\.[^.]+$/, ''));
+    let p = names[0];
+    names.forEach((n) => { while (p && n.indexOf(p) !== 0) p = p.slice(0, -1); });
+    if (names.some((n) => /[A-Za-z]/.test(n.charAt(p.length)) && /[A-Za-z]$/.test(p))) {
+      const i = p.search(/[\s\-–_:,.]+[^\s\-–_:,.]*$/);
+      p = i > 0 ? p.slice(0, i) : '';
+    }
+    p = p.replace(/[\s\-–_:,.#(\[]*(chapter|ch|part|pt|episode|ep|track|disc|cd|book)?[\s\-–_.#]*\d*[\s\-–_:,.#(\[]*$/i, '').trim();
+    return p.length >= 3 ? p : files.length + ' audio files';
+  }
+  function trackTitle(i) {
+    const n = tracks[i].name.replace(/\.[^.]+$/, '');
+    if (bookTitle && n.toLowerCase().indexOf(bookTitle.toLowerCase()) === 0) {
+      const rest = n.slice(bookTitle.length).replace(/^[\s\-–_:,.]+/, '');
+      if (rest) return rest;
+    }
+    return n;
+  }
+
+  // ---------- library of recent books ----------
+  const LIB_KEY = 'library';
+  const LIB_MAX = 25;
+  let library = loadLibrary();
+
+  function loadLibrary() {
+    const saved = sGet(LIB_KEY);
+    if (Array.isArray(saved)) return saved;
+    const found = [];
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.indexOf('book:') === 0 && k.slice(-4) === ':pos') {
+          const base = k.slice(0, -4);
+          const c = base.lastIndexOf(':');
+          const name = base.slice(5, c);
+          const p = sGet(k);
+          found.push({ key: base, name, title: name.replace(/\.[^.]+$/, ''), size: parseInt(base.slice(c + 1), 10) || 0, duration: 0, pos: typeof p === 'number' ? p : 0, opened: 0, stored: false });
+        }
+      }
+    } catch (e) {}
+    sSet(LIB_KEY, found);
+    return found;
+  }
+  function saveLibrary() { sSet(LIB_KEY, library); }
+  function findEntry(key) { return library.find((e) => e.key === key); }
+  function upsert(patch) {
+    let e = findEntry(patch.key);
+    if (!e) {
+      const p = sGet(patch.key + ':pos');
+      e = { key: patch.key, name: '', title: '', size: 0, duration: 0, pos: typeof p === 'number' ? p : 0, opened: 0, stored: false };
+      library.push(e);
+    }
+    Object.assign(e, patch);
+    if (library.length > LIB_MAX) {
+      library.sort((a, b) => b.opened - a.opened);
+      library.slice(LIB_MAX).forEach((old) => { if (old.key !== fileKey) deleteStored(old); });
+      library = library.slice(0, LIB_MAX);
+    }
+    saveLibrary();
+    return e;
+  }
+  function sortedLibrary() { return library.slice().sort((a, b) => b.opened - a.opened); }
+
+  // ---------- saved copies (IndexedDB) ----------
+  function idbOp(mode, fn) {
+    return new Promise((resolve, reject) => {
+      let req;
+      try { req = indexedDB.open('audiobooks', 1); } catch (e) { reject(e); return; }
+      req.onupgradeneeded = () => req.result.createObjectStore('files');
+      req.onerror = () => reject(req.error);
+      req.onsuccess = () => {
+        const db = req.result;
+        let r;
+        try {
+          const tx = db.transaction('files', mode);
+          r = fn(tx.objectStore('files'));
+          tx.oncomplete = () => { db.close(); resolve(r && r.result); };
+          tx.onerror = tx.onabort = () => { db.close(); reject(tx.error); };
+        } catch (e) { db.close(); reject(e); }
+      };
+    });
+  }
+  const idbPut = (k, v) => idbOp('readwrite', (s) => s.put(v, k));
+  const idbGet = (k) => idbOp('readonly', (s) => s.get(k));
+  const idbDel = (k) => idbOp('readwrite', (s) => s.delete(k));
+  const idbClear = () => idbOp('readwrite', (s) => s.clear());
+
+  function storeKey(e, name) { return e.count > 1 ? e.key + '|' + name : e.key; }
+  function deleteStored(e) {
+    if (e.count > 1) (e.names || []).forEach((n) => idbDel(e.key + '|' + n).catch(() => {}));
+    else idbDel(e.key).catch(() => {});
+  }
+  async function storeCopy(files, key) {
+    const e = findEntry(key);
+    if (!e || e.stored) return;
+    $('keepStatus').textContent = 'Saving a copy of ' + e.title + '…';
+    try {
+      for (const f of files) await idbPut(storeKey(e, f.name), { blob: f, name: f.name });
+      e.stored = true;
+      saveLibrary();
+      try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (x) {}
+      renderLibrary();
+    } catch (err) {
+      $('keepStatus').textContent = 'There was not enough browser storage to keep a copy of ' + e.title + '. You can still resume it by choosing the files again.';
+    }
+  }
+  function updateKeepStatus() {
+    const stored = library.filter((e) => e.stored);
+    const total = stored.reduce((n, e) => n + (e.size || 0), 0);
+    $('keepStatus').textContent = stored.length
+      ? `${stored.length} saved ${stored.length === 1 ? 'book' : 'books'}, about ${fmtSize(total)}.`
+      : '';
+    $('clearCopiesBtn').hidden = !stored.length;
+  }
+
+  function isStarted(e) { return e.count > 1 ? (e.trackIndex > 0 || e.pos > 5) : e.pos > 5; }
+  function progressFrac(e) {
+    if (e.count > 1) return (e.duration && e.overall != null) ? e.overall / e.duration : null;
+    return e.duration ? e.pos / e.duration : null;
+  }
+  function entryMeta(e) {
+    const parts = [];
+    const set = e.count > 1;
+    if (isStarted(e)) {
+      if (set) parts.push(`Chapter ${e.trackIndex + 1} of ${e.count}` + (e.pos > 5 ? `, stopped at ${clock(e.pos)}` : ''));
+      else parts.push('Stopped at ' + clock(e.pos) + (e.duration ? ' of ' + clock(e.duration) : ''));
+      const f = progressFrac(e);
+      if (f != null) parts.push(Math.min(100, Math.round(f * 100)) + '% done');
+    } else parts.push(set ? `${e.count} chapters, not started` : 'Not started');
+    if (e.opened) parts.push('Last listened ' + ago(e.opened));
+    return parts.join(' · ');
+  }
+  function entryHint(e) {
+    if (e.stored) return 'Resumes in one tap.';
+    return e.count > 1 ? `You will be asked to choose all ${e.count} files again.` : 'You will be asked to choose the file ' + e.name + ' again.';
+  }
+  function resumeLabel(e) {
+    if (!isStarted(e)) return 'Start listening';
+    return e.count > 1 ? `Resume chapter ${e.trackIndex + 1} at ${clock(e.pos)}` : 'Resume at ' + clock(e.pos);
+  }
+  function resumeSpoken(e) {
+    if (!isStarted(e)) return 'Start ' + e.title;
+    return e.count > 1 ? `Resume ${e.title} at chapter ${e.trackIndex + 1}, ${spoken(e.pos)}` : 'Resume ' + e.title + ' at ' + spoken(e.pos);
+  }
+
+  function renderLibrary() {
+    const list = sortedLibrary();
+    const playerOpen = !!fileKey;
+    const cont = !playerOpen ? list[0] : null;
+    const rest = list.filter((e) => e !== cont && e.key !== fileKey);
+
+    $('continueWrap').hidden = !cont;
+    if (cont) {
+      $('contTitle').textContent = cont.title;
+      $('contMeta').textContent = entryMeta(cont);
+      $('contHint').textContent = entryHint(cont);
+      const pr = $('contProgress');
+      const f = progressFrac(cont);
+      pr.hidden = !(f != null && isStarted(cont));
+      if (!pr.hidden) pr.value = Math.min(100, f * 100);
+      $('contBtn').textContent = resumeLabel(cont);
+      $('contBtn').setAttribute('aria-label', resumeSpoken(cont));
+      $('contBtn').dataset.key = cont.key;
+    }
+
+    $('recentWrap').hidden = !rest.length;
+    const ul = $('recentList'); ul.innerHTML = '';
+    rest.forEach((e) => {
+      const li = document.createElement('li');
+      const go = document.createElement('button');
+      go.type = 'button'; go.className = 'go';
+      go.innerHTML = '<strong></strong><span class="muted"></span><span class="muted"></span>';
+      const spans = go.querySelectorAll('span');
+      go.querySelector('strong').textContent = e.title;
+      spans[0].textContent = entryMeta(e);
+      spans[1].textContent = entryHint(e);
+      spans[0].style.display = spans[1].style.display = 'block';
+      go.setAttribute('aria-label', resumeSpoken(e) + '. ' + entryMeta(e) + '. ' + entryHint(e));
+      go.addEventListener('click', () => resumeEntry(e));
+
+      const del = document.createElement('button');
+      del.type = 'button'; del.className = 'danger'; del.textContent = 'Remove';
+      del.setAttribute('aria-label', 'Remove ' + e.title + ' from recent books');
+      del.addEventListener('click', () => {
+        const idx = rest.indexOf(e);
+        removeEntry(e.key);
+        const next = ul.querySelectorAll('li .go')[Math.min(idx, rest.length - 2)];
+        (next || $('openBtn')).focus();
+        announce('Removed ' + e.title + ' from recent books.');
+      });
+      li.appendChild(go); li.appendChild(del); ul.appendChild(li);
+    });
+    updateKeepStatus();
+  }
+
+  function removeEntry(key) {
+    const e = findEntry(key);
+    if (e) deleteStored(e);
+    library = library.filter((x) => x.key !== key);
+    try { localStorage.removeItem(key + ':pos'); localStorage.removeItem(key + ':order'); } catch (x) {}
+    saveLibrary();
+    renderLibrary();
+  }
+
+  async function resumeEntry(e) {
+    if (!e) return;
+    if (e.key === fileKey && audio.src) {
+      audio.play().catch(() => {});
+      $('playBtn').focus();
+      return;
+    }
+    pending = e;
+    if (e.stored) {
+      try {
+        if (e.count > 1) {
+          const files = [];
+          for (const n of e.names || []) {
+            const rec = await idbGet(e.key + '|' + n);
+            if (!rec || !rec.blob) throw new Error('missing');
+            files.push(new File([rec.blob], rec.name || n, { type: rec.blob.type }));
+          }
+          await loadBook(files, e.key);
+          return;
+        }
+        const rec = await idbGet(e.key);
+        if (rec && rec.blob) {
+          await loadBook([new File([rec.blob], rec.name || e.name, { type: rec.blob.type })], e.key);
+          return;
+        }
+      } catch (err) {}
+      e.stored = false; saveLibrary(); renderLibrary();
+    }
+    announce((e.count > 1 ? `Choose all ${e.count} files for ${e.title}` : 'Choose the file ' + e.name) + ' to resume.');
+    $('fileInput').click();
+  }
+  $('contBtn').addEventListener('click', () => resumeEntry(findEntry($('contBtn').dataset.key)));
+  $('clearCopiesBtn').addEventListener('click', () => {
+    idbClear().catch(() => {});
+    library.forEach((e) => { e.stored = false; });
+    saveLibrary(); renderLibrary();
+    $('keepStatus').textContent = 'All saved copies deleted. Your places and bookmarks are kept.';
+    $('openBtn').focus();
+  });
+  $('keepCopy').addEventListener('change', () => {
+    sSet('pref:keepcopy', $('keepCopy').checked);
+    if ($('keepCopy').checked && fileKey && tracks.length) storeCopy(tracks.map((t) => t.file), fileKey);
+    else if (!$('keepCopy').checked) updateKeepStatus();
+  });
+
+  // ---------- chapter parsing (MP4 "chpl" chapters) ----------
+  function fourcc(dv, o) { return String.fromCharCode(dv.getUint8(o), dv.getUint8(o + 1), dv.getUint8(o + 2), dv.getUint8(o + 3)); }
+  async function readDV(file, start, len) {
+    const buf = await file.slice(start, start + len).arrayBuffer();
+    return new DataView(buf);
+  }
+  async function findChapters(file) {
+    try {
+      let off = 0; const size = file.size;
+      while (off + 8 <= size) {
+        const h = await readDV(file, off, 16);
+        let boxSize = h.getUint32(0); const type = fourcc(h, 4); let hdr = 8;
+        if (boxSize === 1 && h.byteLength >= 16) { boxSize = Number(h.getBigUint64(8)); hdr = 16; }
+        else if (boxSize === 0) boxSize = size - off;
+        if (boxSize < hdr) break;
+        if (type === 'moov') {
+          if (boxSize > 64 * 1024 * 1024) return [];
+          const dv = await readDV(file, off, boxSize);
+          const chpl = searchChpl(dv, hdr, dv.byteLength);
+          if (chpl.length) return chpl;
+          // Fall back to the other common chapter format: a QuickTime text
+          // track that the audio track points at with a "tref/chap" box.
+          return await findQTChapters(file, dv, hdr, dv.byteLength);
+        }
+        off += boxSize;
+      }
+    } catch (e) {}
+    return [];
+  }
+  function searchChpl(dv, start, end) {
+    let o = start;
+    while (o + 8 <= end) {
+      let s = dv.getUint32(o); const t = fourcc(dv, o + 4); let hdr = 8;
+      if (s === 1) { s = Number(dv.getBigUint64(o + 8)); hdr = 16; } else if (s === 0) s = end - o;
+      if (s < hdr || o + s > end) break;
+      if (t === 'chpl') return parseChpl(dv, o + hdr, o + s);
+      if (t === 'udta') { const r = searchChpl(dv, o + hdr, o + s); if (r.length) return r; }
+      o += s;
+    }
+    return [];
+  }
+  function parseChpl(dv, o, end) {
+    const version = dv.getUint8(o); o += 4;
+    if (version) o += 4;
+    const n = dv.getUint8(o); o += 1;
+    const dec = new TextDecoder('utf-8');
+    const out = [];
+    for (let i = 0; i < n && o + 9 <= end; i++) {
+      const start = Number(dv.getBigUint64(o)) / 1e7; o += 8;
+      const len = dv.getUint8(o); o += 1;
+      const title = dec.decode(new Uint8Array(dv.buffer, dv.byteOffset + o, Math.min(len, end - o))); o += len;
+      out.push({ start, title: title.trim() || `Chapter ${i + 1}` });
+    }
+    return out.sort((a, b) => a.start - b.start);
+  }
+  // ---------- chapter parsing (QuickTime text-track chapters) ----------
+  // A generic reader for the boxes inside a container (already loaded as one DataView).
+  function boxChildren(dv, start, end) {
+    const out = []; let o = start;
+    while (o + 8 <= end) {
+      let s = dv.getUint32(o); const t = fourcc(dv, o + 4); let hdr = 8;
+      if (s === 1) { if (o + 16 > end) break; s = Number(dv.getBigUint64(o + 8)); hdr = 16; }
+      else if (s === 0) s = end - o;
+      if (s < hdr || o + s > end) break;
+      out.push({ type: t, off: o, hdr, size: s });
+      o += s;
+    }
+    return out;
+  }
+  function findBox(list, type) { return list.find((b) => b.type === type); }
+  function tkhdTrackId(dv, b) {
+    const c = b.off + b.hdr;
+    return dv.getUint8(c) === 1 ? dv.getUint32(c + 20) : dv.getUint32(c + 12);
+  }
+  function mdhdTimescale(dv, b) {
+    const c = b.off + b.hdr;
+    return dv.getUint8(c) === 1 ? dv.getUint32(c + 20) : dv.getUint32(c + 12);
+  }
+  function chapTrackRefs(dv, tref) {
+    const chap = findBox(boxChildren(dv, tref.off + tref.hdr, tref.off + tref.size), 'chap');
+    if (!chap) return [];
+    const c = chap.off + chap.hdr, n = (chap.size - chap.hdr) >> 2, ids = [];
+    for (let i = 0; i < n; i++) ids.push(dv.getUint32(c + i * 4));
+    return ids;
+  }
+  function readStts(dv, b) {
+    const c = b.off + b.hdr, n = dv.getUint32(c + 4), out = [];
+    let o = c + 8;
+    for (let i = 0; i < n && o + 8 <= b.off + b.size; i++) { out.push([dv.getUint32(o), dv.getUint32(o + 4)]); o += 8; }
+    return out;
+  }
+  function readStsz(dv, b) {
+    const c = b.off + b.hdr, uniform = dv.getUint32(c + 4), n = dv.getUint32(c + 8);
+    if (uniform) return { uniform, count: n };
+    const sizes = []; let o = c + 12;
+    for (let i = 0; i < n && o + 4 <= b.off + b.size; i++) { sizes.push(dv.getUint32(o)); o += 4; }
+    return { sizes, count: n };
+  }
+  function readStsc(dv, b) {
+    const c = b.off + b.hdr, n = dv.getUint32(c + 4), out = [];
+    let o = c + 8;
+    for (let i = 0; i < n && o + 12 <= b.off + b.size; i++) { out.push([dv.getUint32(o), dv.getUint32(o + 4)]); o += 12; }
+    return out;
+  }
+  function readChunkOffsets(dv, stblKids) {
+    const co64 = findBox(stblKids, 'co64');
+    if (co64) {
+      const c = co64.off + co64.hdr, n = dv.getUint32(c + 4), out = [];
+      let o = c + 8;
+      for (let i = 0; i < n && o + 8 <= co64.off + co64.size; i++) { out.push(Number(dv.getBigUint64(o))); o += 8; }
+      return out;
+    }
+    const stco = findBox(stblKids, 'stco');
+    if (!stco) return [];
+    const c = stco.off + stco.hdr, n = dv.getUint32(c + 4), out = [];
+    let o = c + 8;
+    for (let i = 0; i < n && o + 4 <= stco.off + stco.size; i++) { out.push(dv.getUint32(o)); o += 4; }
+    return out;
+  }
+  function sampleLayout(chunkOffsets, stsc, sizeInfo) {
+    const samples = [];
+    for (let ci = 0; ci < chunkOffsets.length && samples.length < sizeInfo.count; ci++) {
+      const chunkNum = ci + 1;
+      let spc = stsc.length ? stsc[0][1] : 0;
+      for (const [first, perChunk] of stsc) { if (first <= chunkNum) spc = perChunk; else break; }
+      let off = chunkOffsets[ci];
+      for (let s = 0; s < spc && samples.length < sizeInfo.count; s++) {
+        const idx = samples.length;
+        const sz = sizeInfo.uniform ? sizeInfo.uniform : sizeInfo.sizes[idx];
+        samples.push({ off, size: sz });
+        off += sz;
+      }
+    }
+    return samples;
+  }
+  async function findQTChapters(file, dv, start, end) {
+    try {
+      const traks = boxChildren(dv, start, end)
+        .filter((b) => b.type === 'trak')
+        .map((t) => ({ trak: t, kids: boxChildren(dv, t.off + t.hdr, t.off + t.size) }));
+      if (traks.length < 2) return [];
+      let chapIds = [];
+      for (const t of traks) {
+        const tref = findBox(t.kids, 'tref');
+        if (tref) { chapIds = chapTrackRefs(dv, tref); if (chapIds.length) break; }
+      }
+      if (!chapIds.length) return [];
+      const target = traks.find((t) => { const tkhd = findBox(t.kids, 'tkhd'); return tkhd && tkhdTrackId(dv, tkhd) === chapIds[0]; });
+      const mdia = target && findBox(target.kids, 'mdia');
+      if (!mdia) return [];
+      const mdiaKids = boxChildren(dv, mdia.off + mdia.hdr, mdia.off + mdia.size);
+      const mdhd = findBox(mdiaKids, 'mdhd'), minf = findBox(mdiaKids, 'minf');
+      if (!mdhd || !minf) return [];
+      const scale = mdhdTimescale(dv, mdhd) || 1000;
+      const stbl = findBox(boxChildren(dv, minf.off + minf.hdr, minf.off + minf.size), 'stbl');
+      if (!stbl) return [];
+      const stblKids = boxChildren(dv, stbl.off + stbl.hdr, stbl.off + stbl.size);
+      const sttsB = findBox(stblKids, 'stts'), stszB = findBox(stblKids, 'stsz'), stscB = findBox(stblKids, 'stsc');
+      if (!sttsB || !stszB || !stscB) return [];
+      const stts = readStts(dv, sttsB), sizeInfo = readStsz(dv, stszB), stsc = readStsc(dv, stscB);
+      const chunkOffsets = readChunkOffsets(dv, stblKids);
+      if (!chunkOffsets.length || !sizeInfo.count) return [];
+      const samples = sampleLayout(chunkOffsets, stsc, sizeInfo);
+      if (!samples.length || samples.length > 1000) return [];
+      const starts = []; let acc = 0, si = 0;
+      for (const [count, delta] of stts) {
+        for (let i = 0; i < count && si < samples.length; i++) { starts.push(acc); acc += delta; si++; }
+      }
+      const dec = new TextDecoder('utf-8'), out = [];
+      for (let i = 0; i < samples.length; i++) {
+        const s = samples[i];
+        if (s.size < 2 || s.size > 2000) continue;
+        const buf = await file.slice(s.off, s.off + s.size).arrayBuffer();
+        const sdv = new DataView(buf);
+        const len = sdv.getUint16(0);
+        const text = (len > 0 && len <= s.size - 2)
+          ? dec.decode(new Uint8Array(buf, 2, len))
+          : dec.decode(new Uint8Array(buf)).replace(/\u0000+$/, '');
+        const title = text.trim();
+        if (title) out.push({ start: (starts[i] || 0) / scale, title });
+      }
+      return out;
+    } catch (e) { return []; }
+  }
+  function chapterAt(t) {
+    let idx = -1;
+    for (let i = 0; i < chapters.length; i++) { if (chapters[i].start <= t + 0.25) idx = i; else break; }
+    return idx;
+  }
+  // chapters work the same way for one file with markers and for a set of files
+  function chapterCount() { return isSet ? tracks.length : chapters.length; }
+  function curChapter() { return isSet ? trackIdx : chapterAt(audio.currentTime); }
+  function chapterName(i) { return isSet ? trackTitle(i) : chapters[i].title; }
+
+  // ---------- opening books ----------
+  $('openBtn').addEventListener('click', () => { pending = null; $('fileInput').click(); });
+  $('folderBtn').addEventListener('click', () => { pending = null; $('folderInput').click(); });
+  $('fileInput').addEventListener('change', (e) => {
+    const list = Array.from(e.target.files || []);
+    e.target.value = '';
+    if (list.length) handlePicked(list);
+  });
+  $('folderInput').addEventListener('change', (e) => {
+    const list = Array.from(e.target.files || []);
+    e.target.value = '';
+    if (list.length) handlePicked(list);
+  });
+
+  function handlePicked(list) {
+    const files = list.filter(isAudioFile);
+    if (!files.length) { announce('No audio files were found in that selection.'); return; }
+    if (files.length === 1) { loadFile(files[0]); return; }
+    const key = setKeyFor(files);
+    const saved = sGet(key + ':order');
+    const byName = new Map(files.map((f) => [f.name, f]));
+    if (Array.isArray(saved) && saved.length === files.length && saved.every((n) => byName.has(n))) {
+      startSet(saved.map((n) => byName.get(n)));
+      return;
+    }
+    showOrder(natSort(files));
+  }
+  function loadFile(file) { return loadBook([file], 'book:' + file.name + ':' + file.size); }
+  function startSet(files) {
+    const key = setKeyFor(files);
+    sSet(key + ':order', files.map((f) => f.name));
+    return loadBook(files, key);
+  }
+
+  // ---------- checking the order of a multi-file book ----------
+  function showOrder(files) {
+    orderFiles = files;
+    openMove = -1;
+    renderOrder();
+    $('orderWrap').hidden = false;
+    $('orderWrap').scrollIntoView({ block: 'start' });
+    $('orderHeading').focus();
+    announce(`${files.length} files. Check that they are in the right order, then choose Start listening.`);
+  }
+  let openMove = -1;
+  function renderOrder(focusIdx, focusSel) {
+    const ol = $('orderList'); ol.innerHTML = '';
+    const n = orderFiles.length;
+    $('orderCount').textContent = n;
+    orderFiles.forEach((f, i) => {
+      const li = document.createElement('li');
+      const name = document.createElement('div');
+      name.className = 'ordname';
+      name.textContent = `${i + 1}. ${f.name}`;
+      li.appendChild(name);
+      if (openMove === i) {
+        const form = document.createElement('form');
+        form.className = 'moveform';
+        const lab = document.createElement('label');
+        lab.setAttribute('for', 'moveInput');
+        lab.textContent = `New position, 1 to ${n}`;
+        const inp = document.createElement('input');
+        inp.id = 'moveInput'; inp.type = 'number'; inp.min = 1; inp.max = n; inp.value = i + 1;
+        inp.inputMode = 'numeric';
+        const go = document.createElement('button');
+        go.type = 'submit'; go.className = 'primary'; go.textContent = 'Move';
+        const no = document.createElement('button');
+        no.type = 'button'; no.textContent = 'Cancel';
+        const close = () => { openMove = -1; renderOrder(i, '[data-act="to"]'); announce('Move cancelled.'); };
+        no.addEventListener('click', close);
+        inp.addEventListener('keydown', (e) => { if (e.key === 'Escape') { e.preventDefault(); close(); } });
+        form.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const v = parseInt(inp.value, 10);
+          if (!(v >= 1 && v <= n)) { announce(`Enter a number from 1 to ${n}.`); inp.focus(); return; }
+          openMove = -1;
+          moveTo(i, v - 1);
+        });
+        form.appendChild(lab); form.appendChild(inp); form.appendChild(go); form.appendChild(no);
+        li.appendChild(form);
+      } else {
+        const mk = (text, act, disabled, aria, fn) => {
+          const b = document.createElement('button');
+          b.type = 'button'; b.textContent = text; b.disabled = disabled; b.dataset.act = act;
+          b.setAttribute('aria-label', aria);
+          b.addEventListener('click', fn);
+          li.appendChild(b);
+        };
+        mk('Move up', 'up', i === 0, `Move ${f.name} up, now ${i + 1} of ${n}`, () => moveTo(i, i - 1));
+        mk('Move down', 'down', i === n - 1, `Move ${f.name} down, now ${i + 1} of ${n}`, () => moveTo(i, i + 1));
+        mk('Move to…', 'to', false, `Move ${f.name} to a position you choose, now ${i + 1} of ${n}`, () => { openMove = i; renderOrder(i); });
+      }
+      ol.appendChild(li);
+    });
+    if (focusIdx !== undefined) {
+      const li = ol.children[focusIdx];
+      let b = li && li.querySelector(focusSel || 'button:not(:disabled)');
+      if (!b || b.disabled) b = li && li.querySelector('button:not(:disabled), input');
+      if (b) b.focus();
+    } else if (openMove >= 0) {
+      const inp = $('moveInput'); if (inp) { inp.focus(); inp.select(); }
+    }
+  }
+  function moveTo(i, j) {
+    if (j < 0 || j >= orderFiles.length || i === j) { renderOrder(i, '[data-act="to"]'); return; }
+    const f = orderFiles[i];
+    orderFiles.splice(i, 1); orderFiles.splice(j, 0, f);
+    renderOrder(j, '[data-act="to"]');
+    announce(`Moved ${f.name} to position ${j + 1} of ${orderFiles.length}.`);
+  }
+  $('orderReset').addEventListener('click', () => {
+    orderFiles = natSort(orderFiles);
+    renderOrder();
+    announce('Order reset to sorting by file name.');
+  });
+  $('orderGo').addEventListener('click', () => {
+    const files = orderFiles.slice();
+    $('orderWrap').hidden = true;
+    startSet(files);
+  });
+  $('orderCancel').addEventListener('click', () => {
+    $('orderWrap').hidden = true;
+    announce('Cancelled.');
+    $('openBtn').focus();
+  });
+  $('changeOrderBtn').addEventListener('click', () => { if (isSet) showOrder(tracks.map((t) => t.file)); });
+
+  // ---------- loading a book ----------
+  async function loadBook(files, key) {
+    savePosition();
+    ready = false;
+    probeToken++;
+    if (objectUrl) { URL.revokeObjectURL(objectUrl); objectUrl = null; }
+    isSet = files.length > 1;
+    tracks = files.map((f) => ({ file: f, name: f.name, size: f.size, duration: 0 }));
+    fileKey = key;
+    bookTitle = isSet ? setTitle(files) : files[0].name.replace(/\.[^.]+$/, '');
+    wantPlay = !!(pending && pending.key === key);
+    pending = null;
+
+    let idx = 0; startAt = 0;
+    const sp = sGet(key + ':pos');
+    if (isSet) {
+      if (sp && typeof sp === 'object') {
+        const j = tracks.findIndex((t) => t.name === sp.n);
+        if (j >= 0) { idx = j; startAt = sp.t || 0; }
+      }
+    } else if (typeof sp === 'number') startAt = sp;
+    trackIdx = idx;
+    recomputeOffsets();
+
+    const patch = { key, name: isSet ? bookTitle : files[0].name, title: bookTitle, size: files.reduce((n, f) => n + f.size, 0), opened: Date.now() };
+    if (isSet) Object.assign(patch, { count: files.length, names: tracks.map((t) => t.name), trackIndex: idx, pos: startAt, overall: null });
+    upsert(patch);
+
+    bookmarks = sGet(key + ':bm') || [];
+    chapters = [];
+    currentChapterIdx = -2;
+    opening = true;
+
+    $('bookTitle').textContent = bookTitle;
+    $('player').hidden = false;
+    $('seekLabel').textContent = isSet ? 'Position in this chapter' : 'Position in book';
+    $('chSection').hidden = !isSet;
+    $('changeOrderBtn').hidden = !isSet;
+    $('prevChBtn').hidden = $('nextChBtn').hidden = !isSet;
+    $('chapterNow').hidden = true;
+    $('qualityNow').hidden = true;
+    if (isSet) { renderChapters(); updateChapter(true); }
+    else $('chList').innerHTML = '';
+    renderBookmarks();
+    renderLibrary();
+    setPlayLabel();
+
+    objectUrl = urlFor(tracks[idx].file);
+    audio.src = objectUrl;
+    audio.load();
+
+    if ($('keepCopy').checked) storeCopy(files, key);
+
+    if (isSet) { probeDurations(probeToken); return; }
+    chapters = await findChapters(files[0]);
+    if (chapters.length && fileKey === key) {
+      renderChapters();
+      $('chSection').hidden = false;
+      $('prevChBtn').hidden = $('nextChBtn').hidden = false;
+      updateChapter(true);
+      renderBookmarks();
+    }
+  }
+
+  function loadTrack(i, start, play) {
+    if (i < 0 || i >= tracks.length) return;
+    savePosition();
+    ready = false;
+    if (objectUrl) URL.revokeObjectURL(objectUrl);
+    trackIdx = i;
+    startAt = start || 0;
+    wantPlay = !!play;
+    objectUrl = urlFor(tracks[i].file);
+    audio.src = objectUrl;
+    audio.load();
+    $('clockNow').textContent = '0:00';
+    updateChapter(true);
+  }
+
+  // ---------- lengths of the files in a set ----------
+  function recomputeOffsets() {
+    let acc = 0; allKnown = true;
+    offsets = tracks.map((t) => { const o = acc; if (t.duration > 0) acc += t.duration; else allKnown = false; return o; });
+    totalDur = acc;
+  }
+  function overallElapsed() { return isSet && allKnown ? offsets[trackIdx] + (audio.currentTime || 0) : null; }
+  function probeOne(file) {
+    return new Promise((resolve) => {
+      const a = new Audio();
+      a.preload = 'metadata';
+      const u = urlFor(file);
+      let done = false, timer = null;
+      const fin = (v) => {
+        if (done) return; done = true; clearTimeout(timer);
+        a.removeAttribute('src'); try { a.load(); } catch (e) {}
+        URL.revokeObjectURL(u); resolve(v);
+      };
+      timer = setTimeout(() => fin(0), 10000);
+      a.onloadedmetadata = () => fin(isFinite(a.duration) ? a.duration : 0);
+      a.onerror = () => fin(0);
+      a.src = u;
+    });
+  }
+  async function probeDurations(token) {
+    for (let i = 0; i < tracks.length; i++) {
+      if (token !== probeToken) return;
+      if (tracks[i].duration > 0) continue;
+      const d = await probeOne(tracks[i].file);
+      if (token !== probeToken) return;
+      if (d > 0) tracks[i].duration = d;
+    }
+    recomputeOffsets();
+    renderChapters();
+    updateChapter(true);
+    if (allKnown) {
+      upsert({ key: fileKey, duration: totalDur, overall: overallElapsed() });
+      renderLibrary();
+    }
+  }
+
+  audio.addEventListener('loadedmetadata', () => {
+    const d = audio.duration || 0;
+    $('seek').max = Math.floor(d);
+    $('clockTotal').textContent = clock(d);
+    const size = tracks[trackIdx] ? tracks[trackIdx].size : 0;
+    if (d > 0 && size) {
+      const kbps = Math.round(size * 8 / d / 1000);
+      const grade = kbps >= 128 ? 'high quality' : kbps >= 64 ? 'good quality' : 'standard spoken-word quality';
+      $('qualityNow').textContent = `Audio file quality: about ${kbps} kbps, ${grade}`;
+      $('qualityNow').hidden = false;
+    }
+    audio.playbackRate = parseFloat($('speed').value);
+
+    if (isSet && tracks[trackIdx]) { tracks[trackIdx].duration = d; recomputeOffsets(); }
+    const wasOpening = opening; opening = false;
+    const autoplay = wantPlay; wantPlay = false;
+
+    let msg = '';
+    if (wasOpening) msg += `Opened ${bookTitle}. ` + (isSet ? `${tracks.length} chapters. ` : `Length ${spoken(d)}. `);
+    if (isSet) msg += `Chapter ${trackIdx + 1}: ${trackTitle(trackIdx)}. Length ${spoken(d)}. `;
+    const saved = startAt; startAt = 0;
+    if (saved > 5 && saved < d - 5) {
+      audio.currentTime = saved;
+      msg += `Resuming at ${spoken(saved)}. `;
+    }
+    if (!isSet && chapters.length) msg += `${chapters.length} chapters. `;
+
+    ready = true;
+    if (!isSet && d > 0) { upsert({ key: fileKey, duration: d }); renderLibrary(); }
+    else if (isSet && allKnown) { upsert({ key: fileKey, duration: totalDur }); }
+    updateUI(true);
+    setMediaSession();
+    if (wasOpening) $('playBtn').focus();
+
+    if (autoplay) {
+      resumingPlay = true;
+      announce(msg.trim());
+      audio.play().catch(() => { resumingPlay = false; announce(msg + 'Press Play to continue.'); });
+    } else {
+      announce(msg + (wasOpening ? 'Press Play to start.' : 'Press Play to continue.'));
+    }
+  });
+
+  audio.addEventListener('error', () => {
+    if (!audio.getAttribute('src')) return;
+    announce('This file could not be played in this browser. Try opening this page in Chrome or Microsoft Edge.');
+  });
+
+  // ---------- playback ----------
+  function togglePlay() {
+    if (!audio.src) { $('openBtn').click(); return; }
+    if (audio.paused) audio.play().catch(() => announce('Playback was blocked. Press Play again.'));
+    else audio.pause();
+  }
+  function setPlayLabel() { $('playBtn').textContent = audio.paused ? 'Play' : 'Pause'; }
+  audio.addEventListener('play', () => { setPlayLabel(); if (resumingPlay) resumingPlay = false; else announce('Playing'); });
+  audio.addEventListener('pause', () => { setPlayLabel(); savePosition(); if (!audio.ended) announce('Paused at ' + spoken(audio.currentTime)); });
+  audio.addEventListener('ended', () => {
+    setPlayLabel();
+    if (isSet && trackIdx < tracks.length - 1) {
+      const nx = trackIdx + 1;
+      loadTrack(nx, 0, true);
+      sSet(fileKey + ':pos', { n: tracks[nx].name, t: 0 });
+      const e = findEntry(fileKey);
+      if (e) { e.trackIndex = nx; e.pos = 0; e.overall = allKnown ? offsets[nx] : null; e.opened = Date.now(); saveLibrary(); }
+    } else announce('End of book.');
+  });
+
+  function skip(dir) {
+    if (!audio.src) return;
+    const amt = parseInt($('skip').value, 10);
+    audio.currentTime = Math.min(Math.max(0, audio.currentTime + dir * amt), audio.duration || 0);
+    updateUI(true);
+    announce((dir < 0 ? 'Back ' : 'Forward ') + spoken(amt) + '. Now at ' + spoken(audio.currentTime));
+  }
+  $('playBtn').addEventListener('click', togglePlay);
+  $('backBtn').addEventListener('click', () => skip(-1));
+  $('fwdBtn').addEventListener('click', () => skip(1));
+
+  $('skip').addEventListener('change', () => {
+    const label = $('skip').selectedOptions[0].textContent;
+    $('backBtn').textContent = 'Back ' + label;
+    $('fwdBtn').textContent = 'Forward ' + label;
+    sSet('pref:skip', $('skip').value);
+  });
+  $('speed').addEventListener('change', () => {
+    audio.playbackRate = parseFloat($('speed').value);
+    sSet('pref:speed', $('speed').value);
+  });
+
+  function whereAmI() {
+    if (!audio.src) { announce('No book open.'); return; }
+    const rate = audio.playbackRate || 1;
+    let msg;
+    if (isSet) {
+      msg = `Chapter ${trackIdx + 1} of ${tracks.length}: ${trackTitle(trackIdx)}. ${spoken(audio.currentTime)} of ${spoken(audio.duration)} in this chapter.`;
+      if (allKnown) {
+        const left = (totalDur - overallElapsed()) / rate;
+        msg += ` About ${spoken(Math.round(left / 60) * 60)} left in the book at this speed.`;
+      }
+    } else {
+      msg = `${spoken(audio.currentTime)} of ${spoken(audio.duration)}.`;
+      const ci = chapterAt(audio.currentTime);
+      if (ci >= 0) msg += ` Chapter ${ci + 1} of ${chapters.length}: ${chapters[ci].title}.`;
+      const left = (audio.duration - audio.currentTime) / rate;
+      msg += ` About ${spoken(Math.round(left / 60) * 60)} left at this speed.`;
+    }
+    msg += audio.paused ? ' Paused.' : ' Playing.';
+    announce(msg);
+  }
+  $('whereBtn').addEventListener('click', whereAmI);
+
+  // ---------- position / seek ----------
+  const seek = $('seek');
+  seek.addEventListener('input', () => {
+    audio.currentTime = parseFloat(seek.value);
+    seek.setAttribute('aria-valuetext', spoken(seek.value));
+    $('clockNow').textContent = clock(seek.value);
+  });
+  seek.addEventListener('focus', () => seek.setAttribute('aria-valuetext', spoken(audio.currentTime) + ' of ' + spoken(audio.duration)));
+
+  function updateUI(force) {
+    const t = audio.currentTime;
+    $('clockNow').textContent = clock(t);
+    if (document.activeElement !== seek || force) {
+      seek.value = Math.floor(t);
+      seek.setAttribute('aria-valuetext', spoken(t) + ' of ' + spoken(audio.duration));
+    }
+    updateChapter(false);
+  }
+  function updateChapter(force) {
+    if (!chapterCount()) return;
+    const ci = curChapter();
+    if (ci === currentChapterIdx && !force) return;
+    currentChapterIdx = ci;
+    const el = $('chapterNow');
+    if (ci >= 0) { el.textContent = `Chapter ${ci + 1} of ${chapterCount()}: ${chapterName(ci)}`; el.hidden = false; }
+    document.querySelectorAll('#chList li').forEach((li, i) => {
+      li.classList.toggle('current', i === ci);
+      const b = li.querySelector('button');
+      if (i === ci) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current');
+    });
+  }
+  audio.addEventListener('timeupdate', () => {
+    updateUI(false);
+    const now = Date.now();
+    if (now - lastSave > 5000) { lastSave = now; savePosition(); }
+  });
+  function savePosition() {
+    if (!(fileKey && audio.src && ready) || isNaN(audio.currentTime)) return;
+    const e = findEntry(fileKey);
+    if (isSet) {
+      sSet(fileKey + ':pos', { n: tracks[trackIdx].name, t: audio.currentTime });
+      if (e) { e.pos = audio.currentTime; e.trackIndex = trackIdx; e.overall = overallElapsed(); e.opened = Date.now(); saveLibrary(); }
+    } else {
+      sSet(fileKey + ':pos', audio.currentTime);
+      if (e) { e.pos = audio.currentTime; e.opened = Date.now(); saveLibrary(); }
+    }
+  }
+  document.addEventListener('visibilitychange', () => { if (document.hidden) savePosition(); });
+  window.addEventListener('pagehide', savePosition);
+
+  function goTo(t, label) {
+    audio.currentTime = t;
+    updateUI(true);
+    announce(`${label}. Now at ${spoken(t)}.` + (audio.paused ? ' Press Play to continue.' : ''));
+  }
+
+  // ---------- chapters ----------
+  function renderChapters() {
+    const list = $('chList'); list.innerHTML = '';
+    if (isSet) {
+      tracks.forEach((t, i) => {
+        const li = document.createElement('li');
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'go';
+        b.innerHTML = `<strong></strong><span class="muted"></span>`;
+        b.querySelector('strong').textContent = `${i + 1}. ${trackTitle(i)}`;
+        b.querySelector('span').textContent = t.duration > 0 ? `Length ${clock(t.duration)}` : 'Length not read yet';
+        b.setAttribute('aria-label', `Chapter ${i + 1}: ${trackTitle(i)}` + (t.duration > 0 ? `, length ${spoken(t.duration)}` : ''));
+        b.addEventListener('click', () => jumpTrack(i));
+        li.appendChild(b); list.appendChild(li);
+      });
+      return;
+    }
+    chapters.forEach((c, i) => {
+      const li = document.createElement('li');
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'go';
+      b.innerHTML = `<strong></strong><span class="muted"></span>`;
+      b.querySelector('strong').textContent = `${i + 1}. ${c.title}`;
+      b.querySelector('span').textContent = `Starts at ${clock(c.start)}`;
+      b.setAttribute('aria-label', `Chapter ${i + 1}: ${c.title}, starts at ${spoken(c.start)}`);
+      b.addEventListener('click', () => goTo(c.start, `Chapter ${i + 1}: ${c.title}`));
+      li.appendChild(b); list.appendChild(li);
+    });
+  }
+  function jumpTrack(i) {
+    if (i === trackIdx) { goTo(0, `Chapter ${i + 1}: ${trackTitle(i)}`); return; }
+    loadTrack(i, 0, !audio.paused);
+  }
+  $('prevChBtn').addEventListener('click', () => {
+    if (isSet) {
+      if (audio.currentTime > 3 || trackIdx === 0) goTo(0, `Start of chapter ${trackIdx + 1}`);
+      else jumpTrack(trackIdx - 1);
+      return;
+    }
+    let ci = chapterAt(audio.currentTime);
+    if (ci >= 0 && audio.currentTime - chapters[ci].start < 3) ci--;
+    ci = Math.max(0, ci);
+    goTo(chapters[ci].start, `Chapter ${ci + 1}: ${chapters[ci].title}`);
+  });
+  $('nextChBtn').addEventListener('click', () => {
+    if (isSet) {
+      if (trackIdx >= tracks.length - 1) { announce('This is the last chapter.'); return; }
+      jumpTrack(trackIdx + 1);
+      return;
+    }
+    const ci = chapterAt(audio.currentTime) + 1;
+    if (ci >= chapters.length) { announce('This is the last chapter.'); return; }
+    goTo(chapters[ci].start, `Chapter ${ci + 1}: ${chapters[ci].title}`);
+  });
+
+  // ---------- bookmarks ----------
+  function saveBookmarks() { sSet(fileKey + ':bm', bookmarks); }
+  function bmOrder(b) {
+    const j = isSet && b.track ? tracks.findIndex((t) => t.name === b.track) : 0;
+    return (j < 0 ? 0 : j) * 1e7 + b.time;
+  }
+  function addBookmark() {
+    if (!audio.src) { announce('Open a book first.'); return; }
+    const t = audio.currentTime;
+    const ci = curChapter();
+    const note = $('bmNote').value.trim();
+    const b = { id: Date.now().toString(36), time: t, note, chapter: ci >= 0 ? chapterName(ci) : '' };
+    if (isSet) b.track = tracks[trackIdx].name;
+    bookmarks.push(b);
+    bookmarks.sort((a, c) => bmOrder(a) - bmOrder(c));
+    saveBookmarks();
+    renderBookmarks();
+    $('bmNote').value = '';
+    announce(`Bookmark added at ${spoken(t)}${note ? ': ' + note : ''}. You have ${bookmarks.length} bookmark${bookmarks.length === 1 ? '' : 's'}.`);
+  }
+  function bmName(b) { return b.note || (b.chapter ? b.chapter : 'Bookmark'); }
+  function goBookmark(b) {
+    if (isSet && b.track) {
+      const j = tracks.findIndex((t) => t.name === b.track);
+      if (j >= 0 && j !== trackIdx) {
+        loadTrack(j, b.time, !audio.paused);
+        return;
+      }
+    }
+    goTo(b.time, 'Jumped to bookmark ' + bmName(b));
+  }
+  function renderBookmarks() {
+    const list = $('bmList'); list.innerHTML = '';
+    $('bmEmpty').hidden = bookmarks.length > 0;
+    bookmarks.forEach((b, i) => {
+      const li = document.createElement('li');
+      const go = document.createElement('button');
+      go.type = 'button'; go.className = 'go';
+      go.innerHTML = `<strong></strong><span class="muted"></span>`;
+      go.querySelector('strong').textContent = bmName(b);
+      go.querySelector('span').textContent = `At ${clock(b.time)}` + (b.note && b.chapter ? ` in ${b.chapter}` : '');
+      go.setAttribute('aria-label', `Go to ${bmName(b)}, at ${spoken(b.time)}` + (b.note && b.chapter ? `, in ${b.chapter}` : ''));
+      go.addEventListener('click', () => goBookmark(b));
+
+      const del = document.createElement('button');
+      del.type = 'button'; del.className = 'danger'; del.textContent = 'Delete';
+      del.setAttribute('aria-label', `Delete bookmark ${bmName(b)}, at ${spoken(b.time)}`);
+      del.addEventListener('click', () => {
+        bookmarks.splice(i, 1);
+        saveBookmarks();
+        renderBookmarks();
+        const next = $('bmList').querySelectorAll('li .go')[Math.min(i, bookmarks.length - 1)];
+        (next || $('addBmBtn')).focus();
+        announce(`Deleted bookmark ${bmName(b)}. ${bookmarks.length} left.`);
+      });
+      li.appendChild(go); li.appendChild(del); list.appendChild(li);
+    });
+  }
+  $('addBmBtn').addEventListener('click', addBookmark);
+  $('bmNote').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); addBookmark(); } });
+
+  // ---------- volume ----------
+  const vol = $('volume');
+  // Above 100% the sound is boosted with a Web Audio gain stage and a soft limiter.
+  let actx = null, gainNode = null, boost = 1;
+  function ensureBoost() {
+    if (actx) return true;
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return false;
+      actx = new AC();
+      const src = actx.createMediaElementSource(audio);
+      gainNode = actx.createGain();
+      const lim = actx.createDynamicsCompressor();
+      lim.threshold.value = -6; lim.knee.value = 6; lim.ratio.value = 12;
+      lim.attack.value = 0.003; lim.release.value = 0.25;
+      src.connect(gainNode); gainNode.connect(lim); lim.connect(actx.destination);
+      return true;
+    } catch (e) { actx = null; return false; }
+  }
+  function applyBoost() {
+    if (boost > 1 && !actx) ensureBoost();
+    if (gainNode) gainNode.gain.value = boost;
+    if (actx && actx.state === 'suspended' && boost > 1) actx.resume().catch(() => {});
+  }
+  audio.addEventListener('play', applyBoost);
+  function setVolume(pct, speak) {
+    pct = Math.max(0, Math.min(300, Math.round(pct)));
+    audio.volume = Math.min(pct, 100) / 100;
+    boost = pct > 100 ? pct / 100 : 1;
+    applyBoost();
+    vol.value = pct;
+    vol.setAttribute('aria-valuetext', pct + ' percent' + (pct > 100 ? ', boosted' : ''));
+    sSet('pref:volume', pct);
+    if (speak) announce('Volume ' + pct + ' percent' + (pct > 100 ? ', boosted' : ''));
+  }
+  vol.addEventListener('input', () => setVolume(parseFloat(vol.value), false));
+  $('volDownBtn').addEventListener('click', () => setVolume(parseFloat(vol.value) - 10, true));
+  $('volUpBtn').addEventListener('click', () => setVolume(parseFloat(vol.value) + 10, true));
+
+  // ---------- keyboard shortcuts ----------
+  function resumeLatest() {
+    const e = sortedLibrary().find((x) => x.key !== fileKey);
+    if (e) resumeEntry(e); else announce('No other recent book to resume.');
+  }
+  document.addEventListener('keydown', (e) => {
+    if (!e.altKey || e.ctrlKey || e.metaKey) return;
+    const map = { KeyP: togglePlay, Comma: () => skip(-1), Period: () => skip(1), KeyB: addBookmark, KeyI: whereAmI, KeyR: resumeLatest, ArrowUp: () => setVolume(parseFloat(vol.value) + 10, true), ArrowDown: () => setVolume(parseFloat(vol.value) - 10, true), KeyO: () => $('openBtn').click() };
+    const fn = map[e.code];
+    if (fn) { e.preventDefault(); fn(); }
+  });
+
+  // ---------- media keys ----------
+  function setMediaSession() {
+    if (!('mediaSession' in navigator)) return;
+    try {
+      navigator.mediaSession.metadata = new MediaMetadata({ title: isSet ? trackTitle(trackIdx) : bookTitle, artist: isSet ? bookTitle : 'Audiobook' });
+      navigator.mediaSession.setActionHandler('play', () => audio.play());
+      navigator.mediaSession.setActionHandler('pause', () => audio.pause());
+      navigator.mediaSession.setActionHandler('seekbackward', () => skip(-1));
+      navigator.mediaSession.setActionHandler('seekforward', () => skip(1));
+      navigator.mediaSession.setActionHandler('previoustrack', () => (isSet ? $('prevChBtn').click() : skip(-1)));
+      navigator.mediaSession.setActionHandler('nexttrack', () => (isSet ? $('nextChBtn').click() : skip(1)));
+    } catch (e) {}
+  }
+
+  // ---------- restore preferences ----------
+  const sv = sGet('pref:volume'); setVolume(sv !== null ? sv : 100, false);
+  const sp = sGet('pref:speed'); if (sp) $('speed').value = sp;
+  const sk = sGet('pref:skip'); if (sk) { $('skip').value = sk; $('skip').dispatchEvent(new Event('change')); }
+  $('keepCopy').checked = !!sGet('pref:keepcopy');
+  renderLibrary();
+})();
+</script>
+</body>
+</html>
