@@ -60,3 +60,29 @@ public class LibraryTests
         Assert.Equal(["new", "old"], store.Recent().Select(b => b.Key));
     }
 }
+
+public class SettingsTests
+{
+    [Fact]
+    public void BookSettingsOverrideDefaults()
+    {
+        var s = new Settings { Speed = 1.25, Volume = 120, SkipSeconds = 10 };
+        var book = new BookEntry();
+        Assert.Equal(1.25, s.SpeedFor(book));
+        book.Audio.Speed = 2;
+        book.Audio.Volume = 400;
+        Assert.Equal(2, s.SpeedFor(book));
+        Assert.Equal(Settings.MaxVolume, s.VolumeFor(book));
+        Assert.Equal(10, s.SkipFor(book));
+        Assert.Equal(1.25, s.SpeedFor(null));
+    }
+
+    [Fact]
+    public void NewBookIsNotPlayedYet()
+    {
+        var b = BookEntry.Create(["x/Dune 1.mp3", "x/Dune 2.mp3"]);
+        Assert.Equal("Dune", b.Title);
+        Assert.False(b.EverPlayed);
+        Assert.Equal(2, b.TrackDurations.Count);
+    }
+}

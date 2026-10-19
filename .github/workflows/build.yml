@@ -15,25 +15,11 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      - name: Test
-        run: dotnet test tests/AudiobookPlayer.Core.Tests -c Release
-
-      - name: Publish
-        run: >
-          dotnet publish src/AudiobookPlayer/AudiobookPlayer.csproj -c Release -r win-x64 --self-contained
-          -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o publish
-
-      - name: Check the app starts
+      - name: Test, build and check the app starts
         shell: pwsh
-        run: |
-          $p = Start-Process -FilePath publish/AudiobookPlayer.exe -ArgumentList '--smoke-test' -PassThru
-          if (-not $p.WaitForExit(60000)) { $p.Kill(); throw 'The app did not finish starting within 60 seconds.' }
-          if ($p.ExitCode -ne 0) {
-            Get-Content "$env:LOCALAPPDATA/AudiobookPlayer/error.log" -ErrorAction SilentlyContinue
-            throw "The app failed to start (exit code $($p.ExitCode))."
-          }
+        run: ./build/build.ps1
 
       - uses: actions/upload-artifact@v4
         with:
-          name: AudiobookPlayer-windows-x64
-          path: publish/AudiobookPlayer.exe
+          name: BookHeart-windows
+          path: release/*

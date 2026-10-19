@@ -1,16 +1,17 @@
 using System.Windows;
 using System.Windows.Media;
+using AudiobookPlayer.Core;
 using Microsoft.Win32;
 
 namespace AudiobookPlayer.Platform;
 
 /// <summary>
-/// Sets the app's colours to match Windows: light or dark mode, or the user's own colours when a
-/// high-contrast theme is on.
+/// Sets the app's colours: light or dark, following Windows unless chosen in Settings. When a
+/// high-contrast theme is on, its colours are always used.
 /// </summary>
 internal static class Theme
 {
-    public static void Apply(ResourceDictionary r)
+    public static void Apply(ResourceDictionary r, ThemeChoice choice)
     {
         if (SystemParameters.HighContrast)
         {
@@ -27,7 +28,7 @@ internal static class Theme
             return;
         }
 
-        bool dark = IsDarkMode();
+        bool dark = choice switch { ThemeChoice.Dark => true, ThemeChoice.Light => false, _ => IsDarkMode() };
         Set(r, "Bg", dark ? "#0A1628" : "#F3F7FB");
         Set(r, "Surface", dark ? "#13233B" : "#FFFFFF");
         Set(r, "Ink", dark ? "#F2F6FA" : "#0A2540");

@@ -7,8 +7,8 @@ public sealed class Row(string title, string detail, string spoken, object? tag 
 {
     private bool _isCurrent;
 
-    public string Title { get; } = title;
-    public string Detail { get; } = detail;
+    public string Title { get; private set; } = title;
+    public string Detail { get; private set; } = detail;
     public string Spoken => _isCurrent ? spoken + ", playing now" : spoken;
     public object? Tag { get; } = tag;
     public bool HasDetail => Detail.Length > 0;
@@ -21,9 +21,23 @@ public sealed class Row(string title, string detail, string spoken, object? tag 
         {
             if (_isCurrent == value) return;
             _isCurrent = value;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsCurrent)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Spoken)));
+            Changed(nameof(IsCurrent), nameof(Spoken));
         }
+    }
+
+    /// <summary>Changes the text in place, so a list being read by a screen reader keeps its place.</summary>
+    public void Update(string newTitle, string newDetail, string newSpoken)
+    {
+        if (Title == newTitle && Detail == newDetail && spoken == newSpoken) return;
+        Title = newTitle;
+        Detail = newDetail;
+        spoken = newSpoken;
+        Changed(nameof(Title), nameof(Detail), nameof(HasDetail), nameof(Spoken));
+    }
+
+    private void Changed(params string[] names)
+    {
+        foreach (var n in names) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(n));
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

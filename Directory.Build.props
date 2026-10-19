@@ -1,0 +1,9 @@
+<Project>
+  <!-- The app's name and version live here. The installer script (installer/BookHeart.iss) repeats the name. -->
+  <PropertyGroup>
+    <AppName>BookHeart</AppName>
+    <Version>0.1.0</Version>
+    <Authors>James Trimble</Authors>
+    <Copyright>Copyright © James Trimble</Copyright>
+  </PropertyGroup>
+</Project>

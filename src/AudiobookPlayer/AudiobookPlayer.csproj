@@ -8,11 +8,16 @@
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <AssemblyName>AudiobookPlayer</AssemblyName>
+    <AssemblyName>$(AppName)</AssemblyName>
     <RootNamespace>AudiobookPlayer</RootNamespace>
-    <Product>Audiobook Player</Product>
-    <Version>0.1.0</Version>
+    <Product>$(AppName)</Product>
+    <AssemblyTitle>$(AppName)</AssemblyTitle>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\app.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="NAudio" Version="2.2.1" />

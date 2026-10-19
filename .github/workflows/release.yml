@@ -1,0 +1,39 @@
+name: Release
+
+# Run from the Actions tab ("Run workflow") with a version number. It builds the installer and
+# portable zip, then publishes them as a GitHub release tagged v<version> on the chosen branch.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version number, like 0.1.0
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Test, build and check the app starts
+        shell: pwsh
+        run: ./build/build.ps1 -Version "${{ inputs.version }}"
+
+      - name: Publish the release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          $notes = "release-notes/v$env:VERSION.md"
+          $ghArgs = @("v$env:VERSION") + (Get-ChildItem release/* | ForEach-Object FullName) + @('--target', $env:GITHUB_SHA, '--title', "BookHeart $env:VERSION")
+          if (Test-Path $notes) { $ghArgs += @('--notes-file', $notes) } else { $ghArgs += '--generate-notes' }
+          gh release create @args
+          if ($LASTEXITCODE -ne 0) { throw 'Creating the release failed.' }

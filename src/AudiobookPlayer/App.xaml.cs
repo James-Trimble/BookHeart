@@ -1,6 +1,7 @@
 using System.IO;
 using System.Windows;
 using System.Windows.Threading;
+using AudiobookPlayer.Core;
 using AudiobookPlayer.Platform;
 using Microsoft.Win32;
 
@@ -9,23 +10,39 @@ namespace AudiobookPlayer;
 public partial class App : Application
 {
     private const string SmokeTestFlag = "--smoke-test";
+    private SingleInstance? _instance;
 
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
         bool smokeTest = e.Args.Contains(SmokeTestFlag);
+        var files = e.Args.Where(a => a != SmokeTestFlag).ToArray();
         DispatcherUnhandledException += (_, args) => OnCrash(args, smokeTest);
 
-        Theme.Apply(Resources);
-        SystemEvents.UserPreferenceChanged += (_, _) => Dispatcher.BeginInvoke(() => Theme.Apply(Resources));
+        if (!smokeTest)
+        {
+            // If the app is already open, hand it the files (or just bring it forward) and quit.
+            _instance = new SingleInstance();
+            if (!_instance.IsFirst && _instance.SendToFirst(files))
+            {
+                Shutdown(0);
+                return;
+            }
+        }
+
+        AppInfo.MigrateOldData();
+        var store = LibraryStore.Load(AppInfo.LibraryPath);
+        Theme.Apply(Resources, store.Settings.Theme);
+        SystemEvents.UserPreferenceChanged += (_, _) => Dispatcher.BeginInvoke(() => Theme.Apply(Resources, store.Settings.Theme));
         SystemParameters.StaticPropertyChanged += (_, args) =>
         {
-            if (args.PropertyName == nameof(SystemParameters.HighContrast)) Theme.Apply(Resources);
+            if (args.PropertyName == nameof(SystemParameters.HighContrast)) Theme.Apply(Resources, store.Settings.Theme);
         };
 
         // Files passed on the command line, e.g. from "Open with" in File Explorer.
-        var window = new MainWindow(e.Args.Where(a => a != SmokeTestFlag).ToArray());
+        var window = new MainWindow(store, files);
         MainWindow = window;
+        _instance?.Listen(paths => Dispatcher.BeginInvoke(() => window.ReceiveFiles(paths)));
         if (smokeTest)
         {
             // Used by the build to check the window loads; closes as soon as it has drawn once.
@@ -34,25 +51,29 @@ public partial class App : Application
         window.Show();
     }
 
+    protected override void OnExit(ExitEventArgs e)
+    {
+        _instance?.Dispose();
+        base.OnExit(e);
+    }
+
     private void OnCrash(DispatcherUnhandledExceptionEventArgs args, bool smokeTest)
     {
-        var log = Path.Combine(Path.GetDirectoryName(Core.LibraryStore.DefaultPath)!, "error.log");
+        var log = AppInfo.ErrorLogPath;
         try
         {
             Directory.CreateDirectory(Path.GetDirectoryName(log)!);
-            File.AppendAllText(log, $"{DateTimeOffset.Now:u}\n{args.Exception}\n\n");
+            File.AppendAllText(log, $"{DateTimeOffset.Now:u} {AppInfo.Name} {AppInfo.Version}\n{args.Exception}\n\n");
         }
-        catch (IOException) { }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
 
+        args.Handled = true;
         if (smokeTest)
         {
-            Console.Error.WriteLine(args.Exception);
             Shutdown(1);
-            args.Handled = true;
             return;
         }
         MessageBox.Show($"Something went wrong: {args.Exception.Message}\n\nThe details were saved to {log}.",
-            "Audiobook Player", MessageBoxButton.OK, MessageBoxImage.Error);
-        args.Handled = true;
+            AppInfo.Name, MessageBoxButton.OK, MessageBoxImage.Error);
     }
 }
