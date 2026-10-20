@@ -20,6 +20,7 @@ These are ideas, not promises. StoryHeart is very new, and anything here can cha
 - **Feedback from inside the program**, sent to a feedback email address on the website's domain.
 - **Changes to the agreement or privacy policy** shown when you next open StoryHeart, and the agreement shown the first time you run a portable copy.
 - **Signing**, so Windows stops warning that StoryHeart is from an unknown publisher.
+- **Keep listening while an update downloads.** It downloads in the background, then your book pauses and the install dialog opens when it's ready.
 - **Cover art**, in the library and while a book plays.
 - **Tooltips**, so hovering over a button says what it does and its shortcut.
 - **A sighted tester**, to check how StoryHeart looks and point out anything odd.
