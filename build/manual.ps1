@@ -1,5 +1,5 @@
 # Turns docs/manual.md into a stand-alone HTML page that ships with the app.
-# Usage: pwsh build/manual.ps1 -Output "publish/installer/BookHeart Manual.html" [-Version 0.1.0]
+# Usage: pwsh build/manual.ps1 -Output "publish/installer/StoryHeart Manual.html" [-Version 0.1.0]
 param([Parameter(Mandatory)][string]$Output, [string]$Version)
 
 $ErrorActionPreference = 'Stop'
@@ -12,7 +12,7 @@ $html = @"
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BookHeart manual</title>
+<title>StoryHeart manual</title>
 <style>
   :root { color-scheme: light dark; --bg: #F3F7FB; --ink: #0A2540; --muted: #3D5570; --link: #1747B8; --line: #B9C7D8; --surface: #FFFFFF; }
   @media (prefers-color-scheme: dark) { :root { --bg: #0A1628; --ink: #F2F6FA; --muted: #B8C8DA; --link: #FFD100; --line: #3A5475; --surface: #13233B; } }
@@ -31,7 +31,7 @@ $html = @"
 <body>
 <main>
 $body
-$(if ($Version) { "<p class=`"version`">BookHeart $Version</p>" })
+$(if ($Version) { "<p class=`"version`">StoryHeart $Version</p>" })
 </main>
 <script>
   // Give headings the same ids GitHub does, so the contents links work.

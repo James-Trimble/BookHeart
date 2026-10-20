@@ -1,8 +1,8 @@
-BookHeart third-party notices
+StoryHeart third-party notices
 
-BookHeart is copyright (c) 2026 James Trimble, all rights reserved. It includes
+StoryHeart is copyright (c) 2026 James Trimble, all rights reserved. It includes
 the open-source components below, which are licensed under their own terms.
-Those terms apply to the components only, not to the rest of BookHeart.
+Those terms apply to the components only, not to the rest of StoryHeart.
 
 
 ================================================================================
@@ -17,7 +17,7 @@ SoundTouch.Net changes the playback speed without changing the pitch. It is
 included unmodified, as the separate file SoundTouch.Net.dll, so you can replace
 it with your own build of the library. Its source code is available from the
 address above. The full text of the licence is in LGPL-2.1.txt, which comes with
-BookHeart.
+StoryHeart.
 
 This library is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the Free

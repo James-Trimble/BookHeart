@@ -1,4 +1,4 @@
-# Builds BookHeart for Windows: runs the tests, checks the app starts, and makes
+# Builds StoryHeart for Windows: runs the tests, checks the app starts, and makes
 #   release/<Name>-<Version>-Setup.exe     the installer
 #   release/<Name>-<Version>-Portable.zip  the portable copy (no installing; keeps its data beside it)
 # Usage: pwsh build/build.ps1 [-Version 0.1.0]
@@ -20,9 +20,9 @@ Write-Host "Building $name $Version"
 Remove-Item publish, release -Recurse -Force -ErrorAction SilentlyContinue
 New-Item -ItemType Directory release | Out-Null
 
-Invoke-Native { dotnet test tests/BookHeart.Core.Tests -c Release }
+Invoke-Native { dotnet test tests/StoryHeart.Core.Tests -c Release }
 
-$project = 'src/BookHeart/BookHeart.csproj'
+$project = 'src/StoryHeart/StoryHeart.csproj'
 Invoke-Native { dotnet publish $project -c Release -r win-x64 --self-contained "-p:Version=$Version" -o publish/installer }
 Invoke-Native { dotnet publish $project -c Release -r win-x64 --self-contained "-p:Version=$Version" `
     -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -o publish/portable }
@@ -64,6 +64,6 @@ if (-not (Test-Path $iscc)) {
     Invoke-Native { choco install innosetup -y --no-progress }
 }
 $numeric = $Version -replace '-.*$', ''
-Invoke-Native { & $iscc "/DAppVersion=$Version" "/DAppNumericVersion=$numeric" "/DSourceDir=..\publish\installer" installer\BookHeart.iss }
+Invoke-Native { & $iscc "/DAppVersion=$Version" "/DAppNumericVersion=$numeric" "/DSourceDir=..\publish\installer" installer\StoryHeart.iss }
 
 Get-ChildItem release | Format-Table Name, Length

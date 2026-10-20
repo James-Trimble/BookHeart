@@ -33,7 +33,7 @@ jobs:
           VERSION: ${{ inputs.version }}
         run: |
           $notes = "release-notes/v$env:VERSION.md"
-          $ghArgs = @("v$env:VERSION") + (Get-ChildItem release/* | ForEach-Object FullName) + @('--target', $env:GITHUB_SHA, '--title', "BookHeart $env:VERSION")
+          $ghArgs = @("v$env:VERSION") + (Get-ChildItem release/* | ForEach-Object FullName) + @('--target', $env:GITHUB_SHA, '--title', "StoryHeart $env:VERSION")
           if (Test-Path $notes) { $ghArgs += @('--notes-file', $notes) } else { $ghArgs += '--generate-notes' }
           # Versions like 0.2.0-beta.1 are test versions: only people who opt in are offered them.
           if ($env:VERSION -match '-') { $ghArgs += '--prerelease' }

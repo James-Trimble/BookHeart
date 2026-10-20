@@ -1,8 +1,8 @@
 <Project>
-  <!-- The app's name and version live here. The installer script (installer/BookHeart.iss) repeats the name. -->
+  <!-- The app's name and version live here. The installer script (installer/StoryHeart.iss) repeats the name. -->
   <PropertyGroup>
-    <AppName>BookHeart</AppName>
-    <Version>0.2.0-beta.5</Version>
+    <AppName>StoryHeart</AppName>
+    <Version>0.2.0-beta.6</Version>
     <Authors>James Trimble</Authors>
     <Company>James Trimble</Company>
     <Copyright>Copyright © 2026 James Trimble</Copyright>

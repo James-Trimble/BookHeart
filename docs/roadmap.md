@@ -1,14 +1,14 @@
 # Roadmap
 
-These are ideas, not promises. BookHeart is very new, and anything here can change, move, or be dropped at any time. Nothing has a date.
+These are ideas, not promises. StoryHeart is very new, and anything here can change, move, or be dropped at any time. Nothing has a date.
 
-## Next test version (0.2.0-beta.6)
+## Next test version (0.2.0-beta.7)
 
 - What's new shows only the list of changes, without repeating the heading or the first item.
 - Type the first letters of a title to jump to it in a list.
 - Tab lands on the selected item in a list, not the first one.
 - Each section in Settings is read out by name when you move into it.
-- BookHeart remembers its window size and position.
+- StoryHeart remembers its window size and position.
 - Home and End on the position slider are harder to press by accident.
 - Drop-down lists follow the dark theme.
 - Sharper text.
@@ -18,12 +18,15 @@ These are ideas, not promises. BookHeart is very new, and anything here can chan
 
 - **A website**, with a home page, downloads, the manual, a privacy page and a way to donate (Ko-fi or GitHub Sponsors).
 - **Feedback from inside the program**, sent to a feedback email address on the website's domain.
-- **Changes to the agreement or privacy policy** shown when you next open BookHeart, and the agreement shown the first time you run a portable copy.
-- **Signing**, so Windows stops warning that BookHeart is from an unknown publisher.
+- **Changes to the agreement or privacy policy** shown when you next open StoryHeart, and the agreement shown the first time you run a portable copy.
+- **Signing**, so Windows stops warning that StoryHeart is from an unknown publisher.
+- **Cover art**, in the library and while a book plays.
+- **Tooltips**, so hovering over a button says what it does and its shortcut.
+- **A sighted tester**, to check how StoryHeart looks and point out anything odd.
 
 ## Later
 
 - Sound cues, for things like reaching a bookmark or the end of a chapter.
 - A sleep timer.
-- BookHeart in more languages, starting in your Windows language.
+- StoryHeart in more languages, starting in your Windows language.
 - A version that plays in a web browser.
