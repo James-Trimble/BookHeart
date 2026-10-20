@@ -29,5 +29,6 @@ These are ideas, not promises. StoryHeart is very new, and anything here can cha
 
 - Sound cues, for things like reaching a bookmark or the end of a chapter.
 - A sleep timer.
+- **Show what you're listening to on Discord**, if you turn it on: "Listening to StoryHeart", with the book's title, or just "an audiobook" if you'd rather keep that private.
 - StoryHeart in more languages, starting in your Windows language.
 - A version that plays in a web browser.
