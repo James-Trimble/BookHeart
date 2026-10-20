@@ -21,7 +21,7 @@ These are ideas, not promises. StoryHeart is very new, and anything here can cha
 - **Changes to the agreement or privacy policy** shown when you next open StoryHeart, and the agreement shown the first time you run a portable copy.
 - **Signing**, so Windows stops warning that StoryHeart is from an unknown publisher.
 - **Keep listening while an update downloads.** It downloads in the background. When it's done, your book pauses and a "Download complete" dialog offers Install now or Later. Choosing Later carries on with your book, and the update installs by itself when you next close StoryHeart. If nothing is playing, the dialog just opens.
-- **Cover art**, in the library and while a book plays.
+- **Book details from the files**: title, author, narrator, series and cover art, read from the audiobook itself, with the file name used when a file has none. Shown and searchable in the library, read out by Alt+I, and shown in Windows' media controls.
 - **Tooltips**, so hovering over a button says what it does and its shortcut.
 - **A sighted tester**, to check how StoryHeart looks and point out anything odd.
 
