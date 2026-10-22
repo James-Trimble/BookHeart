@@ -13,7 +13,7 @@ These are ideas, not promises. StoryHeart is very new, and anything here can cha
 - Drop-down lists follow the dark theme.
 - Sharper text.
 - Move to .NET 10, before support for .NET 8 ends on 10 November 2026.
-- Clearer wording in the licence agreement: the source code is published so anyone can read it, but not to copy or reuse.
+- Clearer wording in the licence agreement: the source code is published so anyone can read it, but not to copy or reuse. The agreement also gets a "Last updated" date.
 
 ## Before the first public release
 
