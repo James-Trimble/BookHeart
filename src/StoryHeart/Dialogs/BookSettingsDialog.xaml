@@ -15,15 +15,19 @@
         <Label Style="{StaticResource FieldLabel}" Target="{Binding ElementName=TitleBox}" Content="Title" />
         <TextBox x:Name="TitleBox" AutomationProperties.Name="Title" Margin="0,0,0,24" />
 
-        <TextBlock Style="{StaticResource H2}" Margin="0,0,0,12" Text="Listening" />
-        <c:AudioSettingsPanel x:Name="Audio" />
+        <GroupBox Header="Listening" Margin="0">
+          <c:AudioSettingsPanel x:Name="Audio" />
+        </GroupBox>
 
-        <TextBlock Style="{StaticResource H2}" Margin="0,24,0,12" Text="Files" />
-        <TextBlock x:Name="FilesInfo" Style="{StaticResource Para}" />
-        <WrapPanel>
-          <Button x:Name="OrderBtn" Content="Change file order…" />
-          <Button x:Name="ExplorerBtn" Content="Show in File Explorer" />
-        </WrapPanel>
+        <GroupBox Header="Files">
+          <StackPanel>
+            <TextBlock x:Name="FilesInfo" Style="{StaticResource Para}" />
+            <WrapPanel>
+              <Button x:Name="OrderBtn" Content="Change file order…" />
+              <Button x:Name="ExplorerBtn" Content="Show in File Explorer" />
+            </WrapPanel>
+          </StackPanel>
+        </GroupBox>
       </StackPanel>
     </ScrollViewer>
   </DockPanel>

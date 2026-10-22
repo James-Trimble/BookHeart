@@ -1,6 +1,7 @@
 STORYHEART END USER LICENCE AGREEMENT
 
 Copyright (c) 2026 James Trimble. All rights reserved.
+Last updated: 22 October 2026
 
 Please read this agreement before installing or using StoryHeart. By installing,
 copying or using StoryHeart you agree to it. If you don't agree, don't install
@@ -26,8 +27,11 @@ Unless the author agrees in writing, you may not:
  b. share copies of StoryHeart, or put it on a website, file-sharing service or
     other place for others to download. Point people to the official download
     page instead;
- c. modify, translate, or make other programs based on StoryHeart;
- d. decompile, disassemble or otherwise reverse engineer StoryHeart, except
+ c. copy, change, translate or share StoryHeart's source code, or use it or
+    any part of it to make another program. The source code is published on
+    GitHub so that anyone can read it and see how StoryHeart works, but
+    reading it doesn't give you these rights (see LICENSE.txt there);
+ d. change the StoryHeart program or make your own version of it, except
     where the law allows it no matter what this agreement says, or where a
     third-party licence described in section 5 allows it;
  e. remove or change any copyright notice, trademark or licence notice in

@@ -32,6 +32,7 @@ public partial class MainWindow
         WhereBtn.Click += (_, _) => WhereAmI();
         AddBmBtn.Click += (_, _) => AddBookmark(askForNote: false);
 
+        Seek.PreviewKeyDown += OnSeekHomeEnd;
         Seek.ValueChanged += (_, e) =>
         {
             if (_updatingUi || !_engine.IsOpen) return;
@@ -322,6 +323,25 @@ public partial class MainWindow
     }
 
     // ---------------------------------------------------------------- position
+
+    private (Key Key, DateTime At) _lastSeekJump;
+
+    /// <summary>
+    /// Home and End on the position slider jump to the start or end, which loses your place if pressed by
+    /// accident. The first press only says what a second press will do.
+    /// </summary>
+    private void OnSeekHomeEnd(object sender, KeyEventArgs e)
+    {
+        if (e.Key is not (Key.Home or Key.End) || Keyboard.Modifiers != ModifierKeys.None) return;
+        if (_lastSeekJump.Key == e.Key && DateTime.UtcNow - _lastSeekJump.At < TimeSpan.FromSeconds(3))
+        {
+            _lastSeekJump = default;
+            return;
+        }
+        e.Handled = true;
+        _lastSeekJump = (e.Key, DateTime.UtcNow);
+        _say.Say(e.Key == Key.Home ? "Press Home again to go to the start." : "Press End again to go to the end.");
+    }
 
     private void OnTick()
     {

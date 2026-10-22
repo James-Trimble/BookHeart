@@ -30,7 +30,9 @@ public partial class UpdateDialog : Window
         Intro.Text = $"You have version {AppInfo.Version}." +
                      (release.IsPreRelease ? " This is a test version, offered because you chose to get test versions in Settings." : "") +
                      (Updater.CanUpdateItself ? "" : " This copy can't update itself, so Install now opens the download page.");
-        Notes.Text = release.Notes.Length > 0 ? release.Notes : "No details were given for this version.";
+        var changes = release.Changes.Count > 0 ? release.Changes : ["No details were given for this version."];
+        Changes.ItemsSource = changes.Select(c => new Row(c, "", c)).ToList();
+        Changes.SelectedIndex = 0;
 
         InstallBtn.Click += async (_, _) => await InstallAsync();
         LaterBtn.Click += (_, _) => { Choice = UpdateChoice.Later; Close(); };

@@ -115,7 +115,7 @@ From the top:
 - The book's title, and the chapter you're in.
 - A **Book settings** button (or **Ctrl+E**).
 - A large clock showing where you are and how long the book or chapter is, and roughly how much of the book is left at your current speed.
-- The **position slider**. Left and right arrows move 5 seconds, Page Up and Page Down move a minute, and Home and End jump to the start and end. Your screen reader reads the position in words, like "12 minutes 5 seconds of 1 hour 2 minutes".
+- The **position slider**. Left and right arrows move 5 seconds, Page Up and Page Down move a minute, and Home and End jump to the start and end. Because that would lose your place if you pressed one by accident, the first press only tells you what will happen, and you press it again to go. Your screen reader reads the position in words, like "12 minutes 5 seconds of 1 hour 2 minutes".
 - A row of five buttons: previous chapter, skip back, play or pause, skip forward, and next chapter.
 - **Where am I?** and **Add bookmark** buttons, with your current speed and volume beside them.
 - Two tabs, **Chapters** and **Bookmarks**. Move between them with **Ctrl+Tab**.
@@ -193,9 +193,11 @@ Open Settings from the File menu, or press **Ctrl+Comma**.
 
 Choose **Save** to keep your changes, or **Cancel** to leave things as they were.
 
+StoryHeart also remembers the size and position of its window, and whether it was maximised, and opens the same way next time.
+
 ## Updates
 
-StoryHeart keeps itself up to date. When it starts, and once a day while it's open, it checks whether there's a new version. If there is, it tells you what's new and asks what you'd like to do:
+StoryHeart keeps itself up to date. When it starts, and once a day while it's open, it checks whether there's a new version. If there is, it shows the list of what's new in it and asks what you'd like to do:
 
 - **Install now** downloads the new version, checks it arrived intact, and installs it. StoryHeart closes for a moment and opens again by itself, on the screen you were on, and tells you it has been updated.
 - **Remind me later** asks again next time StoryHeart starts, or tomorrow.
@@ -214,7 +216,8 @@ If you'd like to help test new versions before they're finished, tick **Include 
 StoryHeart works with NVDA, JAWS and Narrator. A few things worth knowing:
 
 - StoryHeart tells your screen reader what happened after almost everything you do: "Paused at 1 hour 4 minutes", "Forward 30 seconds", "Bookmark added", and so on. The same message also appears in the line at the bottom of the window, if you want to read it again.
-- The lists (books, chapters, bookmarks, and the file order list) are ordinary lists. Tab moves into a list and Tab again moves out of it. Inside, use the arrow keys, Home and End.
+- The lists (books, chapters, bookmarks, and the file order list) are ordinary lists. Tab moves into a list, landing on the item that's selected, and Tab again moves out of it. Inside, use the arrow keys, Home and End, or type the first letters of a title to jump to it.
+- Settings and Book settings are divided into sections, like Appearance and Updates. Your screen reader says the section's name as you move into it.
 - The sliders read their value in words rather than a bare number.
 - Press **Alt** or **F10** to get to the menu bar. Everything in StoryHeart is in the menus, along with its shortcut. Tab doesn't go into the menu bar; it moves between the things on the screen.
 - Press **F1** at any time to open this manual. The full list of keyboard shortcuts is in the Help menu, under **Keyboard shortcuts**.
@@ -285,6 +288,7 @@ These work from anywhere in StoryHeart. To see them inside the program, choose *
 | Delete | Remove the book or bookmark |
 | Applications key or Shift+F10 | More actions for the selected book |
 | Ctrl+Up / Ctrl+Down arrow | Move a file up or down (in Change file order) |
+| Letters | Jump to the item whose title starts with them |
 
 ## Problems and fixes
 

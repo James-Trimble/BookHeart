@@ -58,8 +58,8 @@ public sealed partial record AppVersion(int Major, int Minor, int Patch, string 
 /// <summary>A downloadable file in a release, with the SHA-256 fingerprint GitHub publishes for it.</summary>
 public sealed record ReleaseFile(string Name, string Url, long Size, string? Sha256);
 
-/// <summary>One published version of StoryHeart.</summary>
-public sealed record ReleaseInfo(AppVersion Version, string Title, string Notes, string PageUrl, ReleaseFile? Installer, ReleaseFile? Portable)
+/// <summary>One published version of StoryHeart. <paramref name="Changes"/> is the list of what's new in it.</summary>
+public sealed record ReleaseInfo(AppVersion Version, string Title, IReadOnlyList<string> Changes, string PageUrl, ReleaseFile? Installer, ReleaseFile? Portable)
 {
     public bool IsPreRelease => Version.IsPreRelease;
 }
@@ -97,7 +97,7 @@ public static partial class UpdateFeed
                 }
             }
             if (installer is null && portable is null) continue;
-            list.Add(new ReleaseInfo(version, Str(r, "name") ?? "StoryHeart " + version, MarkdownToText(Str(r, "body") ?? ""),
+            list.Add(new ReleaseInfo(version, Str(r, "name") ?? "StoryHeart " + version, ChangesIn(Str(r, "body") ?? ""),
                 Str(r, "html_url") ?? "", installer, portable));
         }
         return list;
@@ -121,35 +121,58 @@ public static partial class UpdateFeed
     }
 
     /// <summary>
-    /// Turns release notes written in Markdown into plain text that reads well aloud: headings and list
-    /// items each become their own paragraph, with no symbols for a screen reader to read out.
+    /// The list of changes in release notes written in Markdown, as plain text that reads well aloud. It's the
+    /// list under a "What's new" or "What's changed" heading if there is one, otherwise every list item in the
+    /// notes. Notes without a list give their paragraphs instead. Headings and symbols are left out.
     /// </summary>
-    public static string MarkdownToText(string markdown)
+    public static List<string> ChangesIn(string markdown)
     {
-        var paragraphs = new List<string>();
+        var blocks = Blocks(markdown);
+        var underWhatsNew = blocks.Where(b => b.IsListItem && b.Heading is { } h && WhatsNew().IsMatch(h)).Select(b => b.Text).ToList();
+        if (underWhatsNew.Count > 0) return underWhatsNew;
+        var items = blocks.Where(b => b.IsListItem).Select(b => b.Text).ToList();
+        return items.Count > 0 ? items : blocks.Where(b => !b.IsHeading).Select(b => b.Text).ToList();
+    }
+
+    private sealed record Block(string Text, bool IsHeading, bool IsListItem, string? Heading);
+
+    /// <summary>Splits Markdown into headings, list items and paragraphs, each as plain text.</summary>
+    private static List<Block> Blocks(string markdown)
+    {
+        var blocks = new List<Block>();
         var current = new List<string>();
+        bool currentIsItem = false;
+        string? heading = null;
         void Flush()
         {
-            if (current.Count > 0) paragraphs.Add(string.Join(" ", current));
+            if (current.Count > 0) blocks.Add(new Block(string.Join(" ", current), false, currentIsItem, heading));
             current.Clear();
+            currentIsItem = false;
         }
         foreach (var raw in markdown.Replace("\r\n", "\n").Split('\n'))
         {
             var line = raw.Trim();
             if (line.Length == 0) { Flush(); continue; }
-            bool startsBlock = Heading().IsMatch(line) || Bullet().IsMatch(line);
-            line = Heading().Replace(line, "");
-            line = Bullet().Replace(line, "");
-            line = Link().Replace(line, "$1");
-            line = Emphasis().Replace(line, "$2");
-            line = line.Replace("`", "");
-            if (startsBlock) Flush();
-            current.Add(line);
-            if (startsBlock && raw.TrimStart().StartsWith('#')) Flush();
+            if (Heading().IsMatch(line))
+            {
+                Flush();
+                heading = Plain(Heading().Replace(line, ""));
+                blocks.Add(new Block(heading, true, false, null));
+                continue;
+            }
+            if (Bullet().IsMatch(line))
+            {
+                Flush();
+                currentIsItem = true;
+                line = Bullet().Replace(line, "");
+            }
+            current.Add(Plain(line));
         }
         Flush();
-        return string.Join("\n\n", paragraphs);
+        return blocks;
     }
+
+    private static string Plain(string line) => Emphasis().Replace(Link().Replace(line, "$1"), "$2").Replace("`", "");
 
     private static string? Sha256Of(string? digest) =>
         digest is not null && digest.StartsWith("sha256:", StringComparison.OrdinalIgnoreCase) ? digest[7..].ToLowerInvariant() : null;
@@ -164,4 +187,5 @@ public static partial class UpdateFeed
     [GeneratedRegex(@"\[([^\]]+)\]\([^)]+\)")] private static partial Regex Link();
     [GeneratedRegex(@"(\*\*|__|\*|_)(.+?)\1")] private static partial Regex Emphasis();
     [GeneratedRegex(@"^\s*[-*+]\s+")] private static partial Regex Bullet();
+    [GeneratedRegex(@"^what['’]?s (new|changed)", RegexOptions.IgnoreCase)] private static partial Regex WhatsNew();
 }

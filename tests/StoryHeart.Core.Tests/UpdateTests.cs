@@ -54,7 +54,7 @@ public class UpdateTests
         Assert.Equal("https://e/s.exe", r.Installer!.Url);
         Assert.Equal("cd34", r.Installer.Sha256);
         Assert.Equal("ab12", r.Portable!.Sha256);
-        Assert.Equal("What's changed\n\nUpdates arrive by themselves.\n\nSee the manual and F1.", r.Notes);
+        Assert.Equal(["Updates arrive by themselves.", "See the manual and F1."], r.Changes);
     }
 
     [Fact]
@@ -88,9 +88,22 @@ public class UpdateTests
 public class ReleaseNotesTextTests
 {
     [Fact]
-    public void ListItemsAndHeadingsBecomeParagraphsWithoutSymbols()
+    public void OnlyTheChangesAreKeptWithoutHeadingsOrSymbols()
     {
-        var text = UpdateFeed.MarkdownToText("Intro line\r\nstill intro.\r\n\r\n## What's new\r\n- **One** thing\r\n  wrapped onto two lines.\r\n- Two\r\n");
-        Assert.Equal("Intro line still intro.\n\nWhat's new\n\nOne thing wrapped onto two lines.\n\nTwo", text);
+        var changes = UpdateFeed.ChangesIn("A test version.\r\n\r\n## What’s new\r\n\r\n- **One** thing\r\n  wrapped onto two lines.\r\n- Two, see [the manual](docs/manual.md)\r\n\r\n## Testing\r\n\r\n- Not a change.\r\n");
+        Assert.Equal(["One thing wrapped onto two lines.", "Two, see the manual"], changes);
+    }
+
+    [Fact]
+    public void WithoutAWhatsNewHeadingEveryListItemIsAChange()
+    {
+        Assert.Equal(["One", "Two"], UpdateFeed.ChangesIn("Intro.\n\n## Fixes\n- One\n\n## More\n* Two"));
+    }
+
+    [Fact]
+    public void NotesWithoutAListGiveTheirParagraphs()
+    {
+        Assert.Equal(["First paragraph.", "Second one."], UpdateFeed.ChangesIn("## Heading\nFirst paragraph.\n\nSecond one."));
+        Assert.Empty(UpdateFeed.ChangesIn(""));
     }
 }

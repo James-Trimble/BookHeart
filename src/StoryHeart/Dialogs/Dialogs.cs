@@ -1,6 +1,9 @@
 using System.Windows;
+using System.Windows.Automation;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Media;
 using StoryHeart.Platform;
 
 namespace StoryHeart.Dialogs;
@@ -19,8 +22,66 @@ internal static class Dialogs
         dialog.SetResourceReference(Control.ForegroundProperty, "Ink");
         dialog.FontFamily = (System.Windows.Media.FontFamily)Application.Current.Resources["BodyFont"];
         dialog.FontSize = 20;
+        Polish(dialog);
         dialog.PreviewKeyDown += (_, e) => IgnoreArrowsOnButtons(e);
         dialog.KeyDown += (_, e) => { if (e.Key == Key.Escape) { e.Handled = true; dialog.Close(); } };
+    }
+
+    /// <summary>Sharper text, and tooltips for the window's buttons.</summary>
+    public static void Polish(Window window)
+    {
+        // Text drawn to fit the screen's pixels is sharper at the sizes the app uses. Very large text,
+        // like headings, looks better the other way, so those styles switch back.
+        TextOptions.SetTextFormattingMode(window, TextFormattingMode.Display);
+        window.UseLayoutRounding = true;
+        window.Loaded += (_, _) => AddToolTips(window);
+    }
+
+    /// <summary>
+    /// Gives every button a tooltip saying what it does and its shortcut, shown when the mouse is over it. The text
+    /// is worked out when the tooltip opens, so it's right for buttons that change, like Play and Pause.
+    /// Screen readers already say the name and shortcut, so the tooltip isn't given to them a second time.
+    /// </summary>
+    private static void AddToolTips(DependencyObject root)
+    {
+        foreach (var child in LogicalTreeHelper.GetChildren(root).OfType<DependencyObject>())
+        {
+            if (child is ButtonBase { ToolTip: null } button and not (CheckBox or RadioButton))
+            {
+                button.ToolTip = new ToolTip();
+                // Only when the mouse is over the button: popping up as you Tab could make a screen reader talk over itself.
+                ToolTipService.SetShowsToolTipOnKeyboardFocus(button, false);
+                button.ToolTipOpening += (_, e) =>
+                {
+                    var text = Describe(button);
+                    if (text.Length == 0) { e.Handled = true; return; }
+                    ((ToolTip)button.ToolTip).Content = new TextBlock { Text = text, TextWrapping = TextWrapping.Wrap, MaxWidth = 420 };
+                };
+            }
+            AddToolTips(child);
+        }
+    }
+
+    private static string Describe(ButtonBase button)
+    {
+        var name = AutomationProperties.GetName(button);
+        if (string.IsNullOrWhiteSpace(name))
+            name = button.Content as string ?? string.Join(" ", LogicalChildren(button).OfType<TextBlock>()
+                .Where(t => t.Style != Application.Current.Resources["IconText"] && t.Text.Length > 0).Select(t => t.Text));
+        var keys = AutomationProperties.GetAcceleratorKey(button);
+        if (!string.IsNullOrEmpty(keys)) name += $" ({keys.Replace("Control+", "Ctrl+")})";
+        var help = AutomationProperties.GetHelpText(button);
+        return string.IsNullOrEmpty(help) ? name.Trim() : name.Trim() + "\n" + help;
+    }
+
+    private static IEnumerable<object> LogicalChildren(DependencyObject parent)
+    {
+        foreach (var child in LogicalTreeHelper.GetChildren(parent))
+        {
+            yield return child;
+            if (child is DependencyObject d)
+                foreach (var grandchild in LogicalChildren(d)) yield return grandchild;
+        }
     }
 
     /// <summary>
@@ -109,6 +170,8 @@ internal static class Dialogs
         ("Escape", "From the book that's playing, back to the library"),
         ("Control + Comma", "Settings"),
         ("Enter", "In a list: play or open the selected item"),
+        ("Letters", "In a list: jump to the item whose title starts with them"),
+        ("Home or End, twice", "On the position slider: go to the start or the end"),
         ("Delete", "In a list: remove the selected book or bookmark"),
         ("Applications key", "In the book list: more actions for the selected book"),
         ("F1", "The user manual"),

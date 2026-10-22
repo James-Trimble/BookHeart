@@ -17,6 +17,21 @@
     <BooleanToVisibilityConverter x:Key="BoolToVis" />
     <FontFamily x:Key="BodyFont">Atkinson Hyperlegible, Segoe UI, Verdana</FontFamily>
 
+    <Style x:Key="IconText" TargetType="TextBlock">
+      <Setter Property="FontFamily" Value="Segoe Fluent Icons, Segoe MDL2 Assets" />
+      <Setter Property="FontSize" Value="24" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
+    </Style>
+
+    <Style TargetType="ToolTip">
+      <Setter Property="Background" Value="{DynamicResource Surface}" />
+      <Setter Property="Foreground" Value="{DynamicResource Ink}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource Ink}" />
+      <Setter Property="BorderThickness" Value="2" />
+      <Setter Property="Padding" Value="10,6" />
+      <Setter Property="FontSize" Value="17" />
+    </Style>
+
     <!-- A thick, two-colour focus ring that is easy to see on any background. -->
     <Style x:Key="FocusRingStyle">
       <Setter Property="Control.Template">
@@ -90,13 +105,80 @@
       <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
 
-    <!-- The standard Windows drop-down, kept in system colours so its list is always readable. -->
+    <!-- Drop-down lists in the app's own colours, light or dark. -->
+    <Style x:Key="ComboToggle" TargetType="ToggleButton">
+      <Setter Property="Focusable" Value="False" />
+      <Setter Property="ClickMode" Value="Press" />
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="ToggleButton">
+            <Border x:Name="Bd" Background="{DynamicResource Surface}" BorderBrush="{DynamicResource Ink}" BorderThickness="2" CornerRadius="8">
+              <TextBlock Style="{StaticResource IconText}" FontSize="14" Text="&#xE70D;" Foreground="{DynamicResource Ink}"
+                         HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,14,0" />
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="Bd" Property="BorderThickness" Value="3" />
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
     <Style TargetType="ComboBox">
       <Setter Property="FocusVisualStyle" Value="{StaticResource FocusRingStyle}" />
-      <Setter Property="Foreground" Value="{x:Static SystemColors.ControlTextBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource Ink}" />
       <Setter Property="MinHeight" Value="52" />
-      <Setter Property="Padding" Value="10,8" />
+      <Setter Property="Padding" Value="12,8,44,8" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="ComboBox">
+            <Grid>
+              <ToggleButton Style="{StaticResource ComboToggle}"
+                            IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" />
+              <ContentPresenter Margin="{TemplateBinding Padding}" IsHitTestVisible="False" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                Content="{TemplateBinding SelectionBoxItem}" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" />
+              <Popup x:Name="PART_Popup" Placement="Bottom" AllowsTransparency="True" Focusable="False" PopupAnimation="None"
+                     IsOpen="{TemplateBinding IsDropDownOpen}">
+                <Border Background="{DynamicResource Surface}" BorderBrush="{DynamicResource Ink}" BorderThickness="2" CornerRadius="8" Padding="4"
+                        MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}" MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                  <ScrollViewer>
+                    <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained" />
+                  </ScrollViewer>
+                </Border>
+              </Popup>
+            </Grid>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.45" />
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <Style TargetType="ComboBoxItem">
+      <Setter Property="Foreground" Value="{DynamicResource Ink}" />
+      <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="ComboBoxItem">
+            <Border x:Name="Bd" Background="Transparent" CornerRadius="6" Padding="12,8">
+              <ContentPresenter />
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsHighlighted" Value="True">
+                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Primary}" />
+                <Setter Property="Foreground" Value="{DynamicResource PrimaryInk}" />
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
     </Style>
 
     <Style TargetType="Slider">
@@ -130,6 +212,9 @@
       <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
       <Setter Property="KeyboardNavigation.TabNavigation" Value="Once" />
       <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+      <!-- Typing the first letters of an item's title jumps to it. -->
+      <Setter Property="IsTextSearchEnabled" Value="True" />
+      <Setter Property="TextSearch.TextPath" Value="Title" />
     </Style>
 
     <Style x:Key="RowItem" TargetType="ListBoxItem">
@@ -209,13 +294,9 @@
       </Setter>
     </Style>
 
-    <Style x:Key="IconText" TargetType="TextBlock">
-      <Setter Property="FontFamily" Value="Segoe Fluent Icons, Segoe MDL2 Assets" />
-      <Setter Property="FontSize" Value="24" />
-      <Setter Property="HorizontalAlignment" Value="Center" />
-    </Style>
 
     <Style x:Key="H1" TargetType="TextBlock">
+      <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
       <Setter Property="FontSize" Value="36" />
       <Setter Property="FontWeight" Value="Bold" />
       <Setter Property="Margin" Value="0,8,0,8" />
@@ -223,11 +304,27 @@
       <Setter Property="AutomationProperties.HeadingLevel" Value="Level1" />
     </Style>
     <Style x:Key="H2" TargetType="TextBlock">
+      <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
       <Setter Property="FontSize" Value="26" />
       <Setter Property="FontWeight" Value="Bold" />
       <Setter Property="Margin" Value="0,32,0,12" />
       <Setter Property="TextWrapping" Value="Wrap" />
       <Setter Property="AutomationProperties.HeadingLevel" Value="Level2" />
+    </Style>
+    <!-- A section of a dialog. Screen readers say its name when you move into it. -->
+    <Style TargetType="GroupBox">
+      <Setter Property="Margin" Value="0,24,0,0" />
+      <Setter Property="Focusable" Value="False" />
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="GroupBox">
+            <StackPanel>
+              <TextBlock Style="{StaticResource H2}" Margin="0,0,0,8" Text="{Binding Header, RelativeSource={RelativeSource TemplatedParent}}" />
+              <ContentPresenter />
+            </StackPanel>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
     </Style>
     <Style x:Key="Para" TargetType="TextBlock">
       <Setter Property="TextWrapping" Value="Wrap" />

@@ -39,6 +39,7 @@ public partial class MainWindow : Window
         _say = new Announcer(this);
         _say.Announced += m => StatusText.Text = m;
         Title = AppInfo.Name;
+        Dialogs.Dialogs.Polish(this);
 
         BookList.ItemsSource = _bookRows;
         BmList.ItemsSource = _bookmarkRows;
@@ -60,8 +61,35 @@ public partial class MainWindow : Window
         _engine.Failed += (_, ex) => { UpdatePlayState(); _say.Say("The sound device stopped: " + ex.Message); };
         _tick.Tick += (_, _) => OnTick();
 
+        RestorePlace();
         Loaded += OnLoaded;
         Closing += OnClosing;
+    }
+
+    /// <summary>Opens the window where it was last time, as long as that's still on a screen.</summary>
+    private void RestorePlace()
+    {
+        if (_store.Settings.Window is not { Width: > 0, Height: > 0 } p) return;
+        var screen = new Rect(SystemParameters.VirtualScreenLeft, SystemParameters.VirtualScreenTop,
+            SystemParameters.VirtualScreenWidth, SystemParameters.VirtualScreenHeight);
+        var place = new Rect(p.Left, p.Top, Math.Max(p.Width, MinWidth), Math.Max(p.Height, MinHeight));
+        // At least a good part of the title bar has to be visible, or the window could be lost off screen.
+        var titleBar = new Rect(place.Left, place.Top, place.Width, 40);
+        titleBar.Intersect(screen);
+        if (titleBar.IsEmpty || titleBar.Width < 120) return;
+        WindowStartupLocation = WindowStartupLocation.Manual;
+        Left = place.Left;
+        Top = place.Top;
+        Width = place.Width;
+        Height = place.Height;
+        if (p.Maximized) WindowState = WindowState.Maximized;
+    }
+
+    private void SavePlace()
+    {
+        var r = WindowState == WindowState.Normal ? new Rect(Left, Top, ActualWidth, ActualHeight) : RestoreBounds;
+        if (r.IsEmpty || r.Width <= 0) return;
+        _store.Settings.Window = new WindowPlace(r.Left, r.Top, r.Width, r.Height, WindowState == WindowState.Maximized);
     }
 
     // ---------------------------------------------------------------- startup and shutdown
@@ -93,6 +121,7 @@ public partial class MainWindow : Window
     private void OnClosing(object? sender, CancelEventArgs e)
     {
         SavePosition();
+        SavePlace();
         _store.Save();
         _probeStop.Cancel();
         _engine.Dispose();

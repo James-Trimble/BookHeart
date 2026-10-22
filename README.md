@@ -77,7 +77,7 @@ StoryHeart uses some open-source components, which are covered by their own lice
 <details>
 <summary>Building StoryHeart (for the developer)</summary>
 
-You need Windows and the [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0).
+You need Windows and the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0).
 
 ```
 dotnet test tests/StoryHeart.Core.Tests

@@ -14,30 +14,40 @@
       <StackPanel Margin="24">
         <TextBlock Style="{StaticResource H1}" FontSize="28" Margin="0,0,0,8" Text="Settings" />
 
-        <TextBlock Style="{StaticResource H2}" Margin="0,8,0,8" Text="Default listening settings" />
-        <TextBlock Style="{StaticResource MutedPara}" FontSize="17">Every book uses these unless you give it its own in Book settings.</TextBlock>
-        <c:AudioSettingsPanel x:Name="Audio" />
-        <Button x:Name="ApplyAllBtn" Content="Use these for every book…" HorizontalAlignment="Left" Margin="0,16,0,0" FontWeight="Normal"
-                AutomationProperties.HelpText="Clears the speed, volume and skip amount you set for individual books." />
+        <GroupBox Header="Default listening settings" Margin="0,8,0,0">
+          <StackPanel>
+            <TextBlock Style="{StaticResource MutedPara}" FontSize="17">Every book uses these unless you give it its own in Book settings.</TextBlock>
+            <c:AudioSettingsPanel x:Name="Audio" />
+            <Button x:Name="ApplyAllBtn" Content="Use these for every book…" HorizontalAlignment="Left" Margin="0,16,0,0" FontWeight="Normal"
+                    AutomationProperties.HelpText="Clears the speed, volume and skip amount you set for individual books." />
+          </StackPanel>
+        </GroupBox>
 
-        <TextBlock Style="{StaticResource H2}" Margin="0,24,0,8" Text="Appearance" />
-        <Label Style="{StaticResource FieldLabel}" Target="{Binding ElementName=ThemeBox}" Content="Colours" />
-        <ComboBox x:Name="ThemeBox" AutomationProperties.Name="Colours" HorizontalAlignment="Left" MinWidth="280" />
-        <TextBlock Style="{StaticResource MutedPara}" FontSize="16" Margin="0,6,0,0">When Windows high contrast is on, its colours are always used.</TextBlock>
+        <GroupBox Header="Appearance">
+          <StackPanel>
+            <Label Style="{StaticResource FieldLabel}" Target="{Binding ElementName=ThemeBox}" Content="Colours" />
+            <ComboBox x:Name="ThemeBox" AutomationProperties.Name="Colours" HorizontalAlignment="Left" MinWidth="280" />
+            <TextBlock Style="{StaticResource MutedPara}" FontSize="16" Margin="0,6,0,0">When Windows high contrast is on, its colours are always used.</TextBlock>
+          </StackPanel>
+        </GroupBox>
 
-        <TextBlock Style="{StaticResource H2}" Margin="0,24,0,8" Text="Updates" />
-        <CheckBox x:Name="CheckUpdatesBox" VerticalContentAlignment="Center" Margin="0,0,0,10">
-          <TextBlock TextWrapping="Wrap" Text="Check for updates when StoryHeart starts and once a day" />
-        </CheckBox>
-        <CheckBox x:Name="TestVersionsBox" VerticalContentAlignment="Center">
-          <TextBlock TextWrapping="Wrap" Text="Include test versions (for people helping to test StoryHeart)" />
-        </CheckBox>
-        <TextBlock Style="{StaticResource MutedPara}" FontSize="16" Margin="0,6,0,0">Checking for updates only asks GitHub for the list of StoryHeart versions. Nothing about you or your books is sent. You can always check by hand from Help → Check for updates.</TextBlock>
+        <GroupBox Header="Updates">
+          <StackPanel>
+            <CheckBox x:Name="CheckUpdatesBox" VerticalContentAlignment="Center" Margin="0,0,0,10">
+              <TextBlock TextWrapping="Wrap" Text="Check for updates when StoryHeart starts and once a day" />
+            </CheckBox>
+            <CheckBox x:Name="TestVersionsBox" VerticalContentAlignment="Center">
+              <TextBlock TextWrapping="Wrap" Text="Include test versions (for people helping to test StoryHeart)" />
+            </CheckBox>
+            <TextBlock Style="{StaticResource MutedPara}" FontSize="16" Margin="0,6,0,0">Checking for updates only asks GitHub for the list of StoryHeart versions. Nothing about you or your books is sent. You can always check by hand from Help → Check for updates.</TextBlock>
+          </StackPanel>
+        </GroupBox>
 
-        <TextBlock Style="{StaticResource H2}" Margin="0,24,0,8" Text="Starting up" />
-        <CheckBox x:Name="OpenLastBox" VerticalContentAlignment="Center">
-          <TextBlock TextWrapping="Wrap" Text="Open the book I was listening to when the app starts" />
-        </CheckBox>
+        <GroupBox Header="Starting up">
+          <CheckBox x:Name="OpenLastBox" VerticalContentAlignment="Center">
+            <TextBlock TextWrapping="Wrap" Text="Open the book I was listening to when the app starts" />
+          </CheckBox>
+        </GroupBox>
       </StackPanel>
     </ScrollViewer>
   </DockPanel>

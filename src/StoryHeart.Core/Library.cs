@@ -113,6 +113,9 @@ public sealed class BookEntry
 
 public enum ThemeChoice { System, Light, Dark }
 
+/// <summary>A window's size and position on screen, and whether it was maximised.</summary>
+public sealed record WindowPlace(double Left, double Top, double Width, double Height, bool Maximized);
+
 /// <summary>App-wide settings. Speed, volume and skip amount are the defaults for books without their own.</summary>
 public sealed class Settings
 {
@@ -139,6 +142,8 @@ public sealed class Settings
     public string? ResumeView { get; set; }
     /// <summary>Set just before installing an update: the book that was open, if any.</summary>
     public string? ResumeBookKey { get; set; }
+    /// <summary>Where the main window was and how big, so it opens the same way next time.</summary>
+    public WindowPlace? Window { get; set; }
 
     public double SpeedFor(BookEntry? b) => Math.Clamp(b?.Audio.Speed ?? Speed, MinSpeed, MaxSpeed);
     public int VolumeFor(BookEntry? b) => Math.Clamp(b?.Audio.Volume ?? Volume, 0, MaxVolume);

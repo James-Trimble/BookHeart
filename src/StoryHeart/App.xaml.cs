@@ -1,5 +1,7 @@
 using System.IO;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Threading;
 using StoryHeart.Core;
 using StoryHeart.Platform;
@@ -30,6 +32,7 @@ public partial class App : Application
             }
         }
 
+        EventManager.RegisterClassHandler(typeof(ListBox), UIElement.GotKeyboardFocusEvent, new KeyboardFocusChangedEventHandler(FocusSelectedItemOnEntry));
         AppInfo.MigrateOldData();
         var store = LibraryStore.Load(AppInfo.LibraryPath);
         Theme.Apply(Resources, store.Settings.Theme);
@@ -49,6 +52,28 @@ public partial class App : Application
             window.ContentRendered += (_, _) => Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, () => Shutdown(0));
         }
         window.Show();
+    }
+
+    /// <summary>
+    /// Tabbing into a list lands on its selected item, not on the first item or the last one you were on.
+    /// </summary>
+    private static void FocusSelectedItemOnEntry(object sender, KeyboardFocusChangedEventArgs e)
+    {
+        var list = (ListBox)sender;
+        // Only when arriving from outside the list with the keyboard; a mouse click selects what was clicked.
+        if (InputManager.Current.MostRecentInputDevice is not KeyboardDevice) return;
+        if (e.OldFocus is DependencyObject old && (old == list || list.IsAncestorOf(old))) return;
+        if (list.SelectedItem is null || IsOnSelectedItem(list, e.NewFocus)) return;
+        list.Dispatcher.BeginInvoke(DispatcherPriority.Input, () =>
+        {
+            if (!list.IsKeyboardFocusWithin || list.SelectedItem is null || IsOnSelectedItem(list, Keyboard.FocusedElement)) return;
+            list.ScrollIntoView(list.SelectedItem);
+            list.UpdateLayout();
+            (list.ItemContainerGenerator.ContainerFromItem(list.SelectedItem) as ListBoxItem)?.Focus();
+        });
+
+        static bool IsOnSelectedItem(ListBox list, IInputElement? focused) =>
+            focused is DependencyObject d && ItemsControl.ContainerFromElement(list, d) is ListBoxItem { IsSelected: true };
     }
 
     protected override void OnExit(ExitEventArgs e)

@@ -159,7 +159,7 @@
 
         <Border DockPanel.Dock="Top" Style="{StaticResource Card}" Margin="0,8,0,16">
           <StackPanel>
-            <TextBlock HorizontalAlignment="Center">
+            <TextBlock HorizontalAlignment="Center" TextOptions.TextFormattingMode="Ideal">
               <Run x:Name="ClockNow" FontSize="60" FontWeight="Bold" Text="0:00" />
               <Run Foreground="{DynamicResource Muted}" Text=" of " /><Run x:Name="ClockTotal" Foreground="{DynamicResource Muted}" Text="0:00" />
             </TextBlock>
