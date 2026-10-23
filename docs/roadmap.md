@@ -1,6 +1,6 @@
 # Roadmap
 
-These are ideas, not promises. StoryHeart is very new, and anything here can change, move, or be dropped at any time. Nothing has a date, and the version numbers may change too. Versions keep counting up from 0.2 towards 1.0.
+These are ideas, not promises. StoryHeart is very new, and anything here can change, move, or be dropped at any time. Nothing has a date, and the version numbers may change too. Test versions keep counting up through 0.x, and 1.0 is the first release for everyone.
 
 ## Now
 
@@ -32,7 +32,7 @@ Then 0.2.0, the finished version of all of the above.
 - **Watch a folder**: new books you put in your audiobooks folder appear in the library by themselves.
 - **Shelves and filters**: not started, listening and finished, your own collections, and books in a series kept together.
 
-## 0.4: the first public release
+## 0.4: getting ready for everyone
 
 - **The full website at storyheart.app:**
   - a home page saying what StoryHeart does, with screenshots described for screen readers, and a download button;
@@ -52,7 +52,11 @@ Then 0.2.0, the finished version of all of the above.
 - **A sighted tester**, to check how StoryHeart looks and point out anything odd.
 - **Decide whether the code stays public**, or moves to a private repository with only the releases public.
 
-## 0.5: better listening
+## 1.0: the first public release
+
+The first version for everyone, once 0.4 (and any further 0.x versions it turns out to need) is finished and well tested. The website gets its download button, and StoryHeart is announced.
+
+## 1.1: better listening
 
 - **Skip silences**: long pauses in a recording are shortened.
 - **Clearer voices**, easier to hear over background music, and a mono option for people who hear better in one ear.
@@ -61,7 +65,7 @@ Then 0.2.0, the finished version of all of the above.
 - **Listening history and stats**, like how long you've listened this week and when you finished each book.
 - **Show what you're listening to on Discord**, if you turn it on: "Listening to StoryHeart", with the book's title, or just "an audiobook" if you'd rather keep that private.
 
-## 0.6: more books, more places
+## 1.2: more books, more places
 
 - **DAISY talking books**, the format many blind readers get books in from libraries and organisations like RNIB. (Locked books, like NLS BARD's or Audible's, can't be supported.)
 - **Your place on every computer**, by keeping your library in your OneDrive or Dropbox folder.
