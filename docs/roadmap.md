@@ -17,6 +17,8 @@ These are ideas, not promises. StoryHeart is very new, and anything here can cha
 - **Back up a little when you resume**, a few seconds after a short pause and more after a long one, so you don't lose the thread.
 - **Go to a time or percentage**: type 1:23:00 or 45% and jump there.
 - **A sleep timer**, which can also stop at the end of the chapter, and fades out instead of stopping suddenly.
+- **Downloads that pick up where they stopped.** If StoryHeart closes or the connection drops partway through an update, the next try carries on from there instead of starting over.
+- **Careful with metered connections.** On a phone hotspot or a capped data plan, StoryHeart asks before downloading an update instead of doing it in the background.
 
 Then 0.2.0, the finished version of all of the above.
 
