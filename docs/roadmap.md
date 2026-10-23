@@ -1,6 +1,6 @@
 # Roadmap
 
-These are ideas, not promises. StoryHeart is very new, and anything here can change, move, or be dropped at any time. Nothing has a date, and the version numbers may change too.
+These are ideas, not promises. StoryHeart is very new, and anything here can change, move, or be dropped at any time. Nothing has a date, and the version numbers may change too. Versions keep counting up from 0.2 towards 1.0.
 
 ## Now
 
@@ -17,6 +17,7 @@ These are ideas, not promises. StoryHeart is very new, and anything here can cha
 - **A sleep timer**, which can also stop at the end of the chapter, and fades out instead of stopping suddenly.
 - **Downloads that pick up where they stopped.** If StoryHeart closes or the connection drops partway through an update, the next try carries on from there instead of starting over.
 - **Careful with metered connections.** On a phone hotspot or a capped data plan, StoryHeart asks before downloading an update instead of doing it in the background.
+- **Check for updates at storyheart.app.** StoryHeart asks the website for the list of versions instead of GitHub, so the place the code lives can change without breaking updates. If the website can't be reached, it asks GitHub as before. Older versions keep checking GitHub, so new versions stay published there too.
 - **Send feedback** in the Help menu: a new email to feedback@storyheart.app, with your StoryHeart and Windows versions already filled in.
 
 Then 0.2.0, the finished version of all of the above.
@@ -31,7 +32,7 @@ Then 0.2.0, the finished version of all of the above.
 - **Watch a folder**: new books you put in your audiobooks folder appear in the library by themselves.
 - **Shelves and filters**: not started, listening and finished, your own collections, and books in a series kept together.
 
-## 1.0: the first public release
+## 0.4: the first public release
 
 - **The full website at storyheart.app:**
   - a home page saying what StoryHeart does, with screenshots described for screen readers, and a download button;
@@ -51,7 +52,7 @@ Then 0.2.0, the finished version of all of the above.
 - **A sighted tester**, to check how StoryHeart looks and point out anything odd.
 - **Decide whether the code stays public**, or moves to a private repository with only the releases public.
 
-## 1.1: better listening
+## 0.5: better listening
 
 - **Skip silences**: long pauses in a recording are shortened.
 - **Clearer voices**, easier to hear over background music, and a mono option for people who hear better in one ear.
@@ -60,7 +61,7 @@ Then 0.2.0, the finished version of all of the above.
 - **Listening history and stats**, like how long you've listened this week and when you finished each book.
 - **Show what you're listening to on Discord**, if you turn it on: "Listening to StoryHeart", with the book's title, or just "an audiobook" if you'd rather keep that private.
 
-## 1.2: more books, more places
+## 0.6: more books, more places
 
 - **DAISY talking books**, the format many blind readers get books in from libraries and organisations like RNIB. (Locked books, like NLS BARD's or Audible's, can't be supported.)
 - **Your place on every computer**, by keeping your library in your OneDrive or Dropbox folder.
