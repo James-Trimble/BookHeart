@@ -15,6 +15,7 @@ namespace StoryHeart.Platform;
 internal static class Updater
 {
     private static readonly HttpClient Http = CreateClient();
+    private static readonly TimeSpan StallTimeout = TimeSpan.FromMinutes(1);
 
     public static AppVersion CurrentVersion { get; } = AppVersion.TryParse(AppInfo.Version) ?? new AppVersion(0, 0, 0, "");
 
@@ -41,8 +42,12 @@ internal static class Updater
         Directory.CreateDirectory(dir);
         var path = Path.Combine(dir, file.Name);
 
-        using (var response = await Http.GetAsync(file.Url, HttpCompletionOption.ResponseHeadersRead, ct))
+        // However slow the connection, the download carries on as long as data keeps arriving. Only a
+        // connection that stops sending anything for a minute gives up, so it can be tried again later.
+        using var stalled = CancellationTokenSource.CreateLinkedTokenSource(ct);
+        try
         {
+            using var response = await Http.GetAsync(file.Url, HttpCompletionOption.ResponseHeadersRead, ct);
             response.EnsureSuccessStatusCode();
             long total = response.Content.Headers.ContentLength ?? file.Size;
             await using var source = await response.Content.ReadAsStreamAsync(ct);
@@ -50,12 +55,18 @@ internal static class Updater
             var buffer = new byte[81920];
             long done = 0;
             int n;
-            while ((n = await source.ReadAsync(buffer, ct)) > 0)
+            while (true)
             {
+                stalled.CancelAfter(StallTimeout);
+                if ((n = await source.ReadAsync(buffer, stalled.Token)) <= 0) break;
                 await target.WriteAsync(buffer.AsMemory(0, n), ct);
                 done += n;
                 if (total > 0) progress.Report((double)done / total);
             }
+        }
+        catch (OperationCanceledException) when (!ct.IsCancellationRequested)
+        {
+            throw new IOException("The download stopped because no data arrived for a minute. Check your internet connection and try again.");
         }
 
         if (file.Sha256 is { Length: > 0 } expected)
@@ -144,7 +155,8 @@ internal static class Updater
 
     private static HttpClient CreateClient()
     {
-        var client = new HttpClient { Timeout = TimeSpan.FromMinutes(10) };
+        // Only limits how long the server takes to start answering; downloads have their own check, above.
+        var client = new HttpClient { Timeout = TimeSpan.FromMinutes(2) };
         client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(AppInfo.Name, AppInfo.Version));
         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github+json"));
         return client;
