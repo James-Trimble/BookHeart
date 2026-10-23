@@ -122,6 +122,40 @@ internal static class Dialogs
         return chosen;
     }
 
+    /// <summary>Shows the licence agreement with I agree and I don't agree. Returns true if you agree.</summary>
+    public static bool ShowAgreement(Window owner, string intro, string text)
+    {
+        var dlg = new Window { Width = 760, Height = 720 };
+        Prepare(dlg, owner, "Licence agreement");
+        bool agreed = false;
+        var dock = new DockPanel { Margin = new Thickness(24) };
+        var heading = new TextBlock { Text = intro, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, 16) };
+        DockPanel.SetDock(heading, Dock.Top);
+        var row = new WrapPanel { Margin = new Thickness(0, 16, 0, 0) };
+        DockPanel.SetDock(row, Dock.Bottom);
+        var agree = new Button { Content = "I agree", Style = (Style)Application.Current.Resources["PrimaryButton"] };
+        var decline = new Button { Content = "I don't agree" };
+        AutomationProperties.SetHelpText(decline, "Closes " + AppInfo.Name + ".");
+        agree.Click += (_, _) => { agreed = true; dlg.Close(); };
+        decline.Click += (_, _) => dlg.Close();
+        row.Children.Add(agree);
+        row.Children.Add(decline);
+        var box = new TextBox
+        {
+            Text = text, IsReadOnly = true, IsReadOnlyCaretVisible = true, TextWrapping = TextWrapping.Wrap, AcceptsReturn = true,
+            VerticalScrollBarVisibility = ScrollBarVisibility.Auto, VerticalContentAlignment = VerticalAlignment.Top, FontSize = 17,
+        };
+        AutomationProperties.SetName(box, "Licence agreement");
+        dock.Children.Add(heading);
+        dock.Children.Add(row);
+        dock.Children.Add(box);
+        dlg.Content = dock;
+        AutomationProperties.SetHelpText(dlg, intro);
+        dlg.Loaded += (_, _) => { box.Focus(); box.CaretIndex = 0; };
+        dlg.ShowDialog();
+        return agreed;
+    }
+
     /// <summary>Asks for a line of text. Returns null if cancelled.</summary>
     public static string? Prompt(Window owner, string title, string label, string initial = "")
     {

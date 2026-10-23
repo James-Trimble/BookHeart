@@ -94,8 +94,16 @@ public partial class MainWindow : Window
 
     // ---------------------------------------------------------------- startup and shutdown
 
+    /// <summary>Set for the build's start-up check, which mustn't stop for questions.</summary>
+    public bool IsSmokeTest { get; init; }
+
     private void OnLoaded(object? sender, RoutedEventArgs e)
     {
+        if (!IsSmokeTest && !CheckAgreement())
+        {
+            Application.Current.Shutdown();
+            return;
+        }
         _media = new MediaControls(this);
         _media.PlayPressed += () => { if (!_engine.IsPlaying) TogglePlay(); };
         _media.PausePressed += () => { if (_engine.IsPlaying) TogglePlay(); };
@@ -125,6 +133,7 @@ public partial class MainWindow : Window
         _store.Save();
         _probeStop.Cancel();
         _engine.Dispose();
+        InstallOnClose();
     }
 
     /// <summary>Files sent from another copy of the app, e.g. a book double-clicked in File Explorer.</summary>
@@ -305,8 +314,7 @@ public partial class MainWindow : Window
             if (book == _book)
             {
                 ApplyAudioSettings();
-                BookTitle.Text = book.Title;
-                Title = book.Title + " – " + AppInfo.Name;
+                ShowBookHeading();
             }
         };
         dlg.OrderChanged += () =>

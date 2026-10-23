@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Interop;
 using Windows.Media;
+using Windows.Storage.Streams;
 
 namespace StoryHeart.Platform;
 
@@ -54,14 +55,29 @@ internal sealed class MediaControls
         _smtc.DisplayUpdater.Update();
     }
 
-    public void SetNowPlaying(string title, string artist)
+    public void SetNowPlaying(string title, string artist, string album, byte[]? cover)
     {
         if (_smtc is null) return;
         var d = _smtc.DisplayUpdater;
         d.Type = MediaPlaybackType.Music;
         d.MusicProperties.Title = title;
         d.MusicProperties.Artist = artist;
+        d.MusicProperties.AlbumTitle = album;
+        d.Thumbnail = cover is null ? null : RandomAccessStreamReference.CreateFromStream(ToStream(cover));
         d.Update();
+    }
+
+    private static InMemoryRandomAccessStream ToStream(byte[] bytes)
+    {
+        var stream = new InMemoryRandomAccessStream();
+        using (var writer = new DataWriter(stream.GetOutputStreamAt(0)))
+        {
+            writer.WriteBytes(bytes);
+            writer.StoreAsync().AsTask().GetAwaiter().GetResult();
+            writer.DetachStream();
+        }
+        stream.Seek(0);
+        return stream;
     }
 
     private void Raise(SystemMediaTransportControlsButton button)

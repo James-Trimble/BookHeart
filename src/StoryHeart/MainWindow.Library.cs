@@ -13,7 +13,7 @@ namespace StoryHeart;
 public partial class MainWindow
 {
     private static readonly (string Key, string Label)[] SortOptions =
-        [("recent", "Recently played"), ("title", "Title"), ("added", "Recently added")];
+        [("recent", "Recently played"), ("title", "Title"), ("author", "Author"), ("added", "Recently added")];
 
     private readonly CancellationTokenSource _probeStop = new();
     private bool _probing;
@@ -109,9 +109,12 @@ public partial class MainWindow
             entries.Add(entry);
             newOnes.Add(entry);
         }
+        // A few books get their titles straight away, so they're announced by name; a big folder is read in the background.
+        if (newOnes.Count <= 5)
+            foreach (var entry in newOnes) entry.ApplyDetails(TagReader.ReadBook(entry.Files));
         _store.Save();
         int added = newOnes.Count;
-        if (added > 1) SortBox.SelectedIndex = 2;
+        if (added > 1) SortBox.SelectedIndex = Array.FindIndex(SortOptions, o => o.Key == "added");
         SearchBox.Text = "";
         RenderLibrary(select: entries.FirstOrDefault());
         if (announce)
@@ -302,11 +305,14 @@ public partial class MainWindow
         var books = _store.Books.AsEnumerable();
         var query = SearchBox.Text.Trim();
         if (query.Length > 0)
-            books = books.Where(b => b.Title.Contains(query, StringComparison.CurrentCultureIgnoreCase) ||
+            books = books.Where(b => new[] { b.Title, b.Author, b.Narrator, b.Series }.Any(t => t?.Contains(query, StringComparison.CurrentCultureIgnoreCase) == true) ||
                                      b.Files.Any(f => Path.GetFileName(f).Contains(query, StringComparison.CurrentCultureIgnoreCase)));
         books = SortOptions[Math.Max(0, SortBox.SelectedIndex)].Key switch
         {
             "title" => books.OrderBy(b => b.Title, NaturalComparer.Instance),
+            // Books without an author go last; a series stays together, in title order.
+            "author" => books.OrderBy(b => b.Author is null).ThenBy(b => b.Author, NaturalComparer.Instance)
+                             .ThenBy(b => b.Series ?? b.Title, NaturalComparer.Instance).ThenBy(b => b.Title, NaturalComparer.Instance),
             "added" => books.OrderByDescending(b => b.Added),
             _ => books.OrderByDescending(b => b.Opened).ThenByDescending(b => b.Added),
         };
@@ -316,7 +322,9 @@ public partial class MainWindow
             var status = Status(b);
             var when = LastListened(b);
             var playing = b == _book ? (_engine.IsPlaying ? "Playing now · " : "Open · ") : "";
-            return new Row(b.Title, playing + status + " · " + when, $"{b.Title}. {playing}{status}. {when}", b);
+            var by = b.Byline.Length > 0 ? b.Byline + " · " : "";
+            var spokenBy = b.Byline.Length > 0 ? ", " + b.Byline : "";
+            return new Row(b.Title, by + playing + status + " · " + when, $"{b.Title}{spokenBy}. {playing}{status}. {when}", b);
         }).ToList();
         if (rows.Select(r => r.Tag).SequenceEqual(_bookRows.Select(r => r.Tag)))
         {
@@ -363,7 +371,7 @@ public partial class MainWindow
         bool open = card == _book;
         ContLabel.Text = open ? (_engine.IsPlaying ? "Playing now" : "Open now") : "Continue listening";
         ContTitle.Text = card.Title;
-        ContMeta.Text = Status(card);
+        ContMeta.Text = (card.Byline.Length > 0 ? card.Byline + " · " : "") + Status(card);
         var f = card.ProgressFraction;
         ContProgress.Visibility = f is not null && (card.IsStarted || card.Finished) ? Visibility.Visible : Visibility.Collapsed;
         ContProgress.Value = (f ?? 0) * 100;
@@ -383,9 +391,19 @@ public partial class MainWindow
         {
             while (!_probeStop.IsCancellationRequested)
             {
-                var book = NeedsLength(_book) ? _book : _store.Books.FirstOrDefault(NeedsLength);
+                var book = NeedsReading(_book) ? _book : _store.Books.FirstOrDefault(NeedsReading);
                 if (book is null) break;
                 var files = book.Files.ToList();
+                if (!book.DetailsRead)
+                {
+                    var details = await Task.Run(() => TagReader.ReadBook(files));
+                    if (_probeStop.IsCancellationRequested) return;
+                    book.ApplyDetails(details);
+                    _store.Save();
+                    if (book == _book) ShowBookHeading();
+                    if (!PlayerShown) RenderLibrary();
+                    if (!NeedsLength(book)) continue;
+                }
                 var lengths = await Task.Run(() => files.Select(f =>
                 {
                     try { return AudioEngine.ReadDuration(f).TotalSeconds; } catch (Exception) { return -1; }
@@ -407,6 +425,8 @@ public partial class MainWindow
         }
         finally { _probing = false; }
     }
+
+    private static bool NeedsReading(BookEntry? b) => b is not null && b.MissingFiles().Count == 0 && (!b.DetailsRead || NeedsLength(b));
 
     /// <summary>True when a book's length hasn't been read yet (-1 marks a file that couldn't be read, so it isn't retried).</summary>
     private static bool NeedsLength(BookEntry? b)

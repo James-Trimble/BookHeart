@@ -1,7 +1,7 @@
 STORYHEART END USER LICENCE AGREEMENT
 
 Copyright (c) 2026 James Trimble. All rights reserved.
-Last updated: 22 October 2026
+Last updated: 23 October 2026
 
 Please read this agreement before installing or using StoryHeart. By installing,
 copying or using StoryHeart you agree to it. If you don't agree, don't install
@@ -50,11 +50,11 @@ licensed to you under their own licences, which are listed in the file
 THIRD-PARTY-NOTICES.txt that comes with StoryHeart. Nothing in this agreement
 limits the rights those licences give you.
 
-In particular, StoryHeart uses the SoundTouch.Net library, which is covered by
-the GNU Lesser General Public License, version 2.1. It is included as a separate
-file, SoundTouch.Net.dll. You may replace that file with a modified version of
-the library, and you may reverse engineer StoryHeart as far as is needed to
-debug such modifications.
+In particular, StoryHeart uses the SoundTouch.Net and TagLib# libraries, which
+are covered by the GNU Lesser General Public License, version 2.1. They are
+included as separate files, SoundTouch.Net.dll and TagLibSharp.dll. You may
+replace those files with modified versions of the libraries, and you may
+reverse engineer StoryHeart as far as is needed to debug such modifications.
 
 6. Your files and privacy
 

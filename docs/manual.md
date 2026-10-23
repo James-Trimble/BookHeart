@@ -89,9 +89,11 @@ The library is the first thing you see when StoryHeart starts. Get back to it fr
 
 At the top is a box showing the book you listened to last, with a button to pick up where you stopped. **Alt+R** does the same thing from anywhere. While a book is open, the box shows that book instead, with a button to go back to it.
 
-Below that are the **Add books** and **Add a folder** buttons, a search box, and a choice of how to sort the list: by when you last listened, by title, or by when you added the book.
+Below that are the **Add books** and **Add a folder** buttons, a search box, and a choice of how to sort the list: by when you last listened, by title, by author (with each series kept together), or by when you added the book.
 
-Then comes the list of books. Use the up and down arrow keys to move through it. For each book you'll hear its title, how far through it you are, roughly how much is left, and when you last listened. Books you haven't started say "Not started" along with how long they are. Lengths can take a few seconds to show up after you add books, because StoryHeart reads them quietly in the background.
+Then comes the list of books. Use the up and down arrow keys to move through it. For each book you'll hear its title, its author and narrator if the files say who they are, how far through it you are, roughly how much is left, and when you last listened. Books you haven't started say "Not started" along with how long they are. Lengths can take a few seconds to show up after you add books, because StoryHeart reads them quietly in the background.
+
+**Titles and authors.** Most audiobook files have the book's title, author and narrator stored inside them, and often a series and a cover picture. StoryHeart uses those when they're there, and the file or folder name when they aren't. If you add a big folder of books, the names can change from file names to proper titles over the first few seconds as StoryHeart reads them. If you've renamed a book yourself in Book settings, your name is always kept. The cover picture shows in the Windows media controls.
 
 With a book selected:
 
@@ -103,7 +105,7 @@ The **Play**, **Book settings** and **Remove from library** buttons under the li
 
 Removing a book from your library forgets your place and bookmarks in it. Your files are never deleted. StoryHeart asks before removing anything.
 
-Typing in the search box narrows the list to books whose title or file names contain what you typed. Clear the box to see everything again.
+Typing in the search box narrows the list to books whose title, author, narrator, series or file names contain what you typed. Clear the box to see everything again.
 
 ## Listening to a book
 
@@ -112,7 +114,7 @@ When a book opens, you're taken to the listening screen. The **Play** button has
 From the top:
 
 - A **Library** button to go back to the library (or press **Escape**).
-- The book's title, and the chapter you're in.
+- The book's title, its author and narrator, and the chapter you're in.
 - A **Book settings** button (or **Ctrl+E**).
 - A large clock showing where you are and how long the book or chapter is, and roughly how much of the book is left at your current speed.
 - The **position slider**. Left and right arrows move 5 seconds, Page Up and Page Down move a minute, and Home and End jump to the start and end. Because that would lose your place if you pressed one by accident, the first press only tells you what will happen, and you press it again to go. Your screen reader reads the position in words, like "12 minutes 5 seconds of 1 hour 2 minutes".
@@ -131,7 +133,7 @@ You don't need the buttons once you know the shortcuts. These work from anywhere
 | Ctrl+Right arrow | Next chapter |
 | Alt+I | Where am I? |
 
-**Where am I?** tells you the chapter you're in, how far into it you are, how much of the book is left at the speed you're listening at, and whether it's playing or paused.
+**Where am I?** tells you the chapter you're in, how far into it you are, how much of the book is left at the speed you're listening at, whether it's playing or paused, and the book's title and author.
 
 StoryHeart saves your place every few seconds, and whenever you pause, change book or close the program. You can close it at any time without losing anything.
 
@@ -197,19 +199,23 @@ StoryHeart also remembers the size and position of its window, and whether it wa
 
 ## Updates
 
-StoryHeart keeps itself up to date. When it starts, and once a day while it's open, it checks whether there's a new version. If there is, it shows the list of what's new in it and asks what you'd like to do:
+StoryHeart keeps itself up to date. When it starts, and once a day while it's open, it checks whether there's a new version.
 
-- **Install now** downloads the new version, checks it arrived intact, and installs it. StoryHeart closes for a moment and opens again by itself, on the screen you were on, and tells you it has been updated.
-- **Remind me later** asks again next time StoryHeart starts, or tomorrow.
+If there is, it **downloads it in the background** while you carry on listening, and checks it arrived intact. When it's ready, your book pauses and StoryHeart shows the list of what's new and asks what you'd like to do:
+
+- **Install now** installs it. StoryHeart closes for a moment and opens again by itself, on the screen you were on, and tells you it has been updated.
+- **Later** carries on with your book. The update installs by itself when you next close StoryHeart, and doesn't open StoryHeart again afterwards.
 - **Skip this version** stops asking about that version. You'll still be told about the one after it.
 
-StoryHeart never interrupts you mid-listen to tell you about an update. If one turns up while a book is playing, it waits until you pause.
+If you're in another program when the download finishes, StoryHeart waits until you come back to it before pausing and asking.
 
-You can check whenever you like from **Help → Check for updates**. To stop StoryHeart checking by itself, untick "Check for updates when StoryHeart starts and once a day" in [Settings](#settings).
+You can check whenever you like from **Help → Check for updates**. If an update has already downloaded, that offers it straight away. To stop StoryHeart checking by itself, untick "Check for updates when StoryHeart starts and once a day" in [Settings](#settings).
 
 Checking for updates means asking GitHub, where StoryHeart's releases are kept, for the list of versions. Nothing about you or your books is sent.
 
 If you'd like to help test new versions before they're finished, tick **Include test versions** in Settings. Test versions can have rough edges, so only do this if you don't mind that, and please say if something goes wrong.
+
+**The licence agreement.** If a new version comes with a changed licence agreement, StoryHeart shows it to you once, the first time the new version opens, with **I agree** and **I don't agree**. A portable copy shows the agreement the first time you run it, because it has no installer to show it. Choosing I don't agree closes StoryHeart.
 
 ## Using StoryHeart with a screen reader
 

@@ -83,8 +83,9 @@ public partial class MainWindow
         _book = entry;
         _chapters = !entry.IsSet && IsMp4(entry.Files[0]) ? Mp4Chapters.Read(entry.Files[0]) : [];
         _shownChapter = -2;
-        Title = entry.Title + " – " + AppInfo.Name;
-        BookTitle.Text = entry.Title;
+        _cover = null;
+        ShowBookHeading();
+        LoadCover(entry);
         SeekLabel.Content = entry.IsSet ? "Position in this chapter" : "Position in book";
         ChangeOrderBtn.Visibility = entry.IsSet ? Visibility.Visible : Visibility.Collapsed;
         RenderChapters();
@@ -95,6 +96,37 @@ public partial class MainWindow
 
         if (LoadTrack(entry.TrackIndex, entry.Position, autoplay, opening: true)) ProbeLibrary();
         RenderLibrary(select: entry);
+    }
+
+    private byte[]? _cover;
+
+    /// <summary>Shows the open book's title, author and narrator, and tells Windows' media controls.</summary>
+    private void ShowBookHeading()
+    {
+        if (_book is null) return;
+        Title = _book.Title + " – " + AppInfo.Name;
+        BookTitle.Text = _book.Title;
+        BookBy.Text = _book.Byline.Length > 0 ? char.ToUpper(_book.Byline[0]) + _book.Byline[1..] : "";
+        BookBy.Visibility = BookBy.Text.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
+        UpdateMediaControls();
+    }
+
+    /// <summary>What Windows shows in its media controls: the chapter, the author and the book, with the cover.</summary>
+    private void UpdateMediaControls()
+    {
+        if (_book is null || !_engine.IsOpen) return;
+        var chapter = _book.IsSet ? TrackTitle(_book.TrackIndex) : null;
+        _media?.SetNowPlaying(chapter ?? _book.Title, _book.Author ?? (chapter is null ? AppInfo.Name : _book.Title), _book.Title, _cover);
+    }
+
+    /// <summary>Reads the book's cover picture in the background, for Windows' media controls.</summary>
+    private async void LoadCover(BookEntry book)
+    {
+        var first = book.Files[0];
+        var cover = await Task.Run(() => TagReader.ReadCover(first));
+        if (book != _book) return;
+        _cover = cover;
+        UpdateMediaControls();
     }
 
     /// <summary>Closes the open book, e.g. when it is removed from the library.</summary>
@@ -142,7 +174,7 @@ public partial class MainWindow
         ClockTotal.Text = TimeText.Clock(d);
 
         var msg = "";
-        if (opening) msg += $"Opened {book.Title}. " + (book.IsSet ? $"{book.Files.Count} chapters. " : $"Length {TimeText.Spoken(d)}. ");
+        if (opening) msg += $"Opened {book.Title}{(book.Byline.Length > 0 ? ", " + book.Byline : "")}. " + (book.IsSet ? $"{book.Files.Count} chapters. " : $"Length {TimeText.Spoken(d)}. ");
         if (book.IsSet) msg += $"Chapter {index + 1}: {TrackTitle(index)}. ";
         if (start > 5 && start < d - 5)
         {
@@ -156,7 +188,7 @@ public partial class MainWindow
         _shownChapter = -2;
         UpdatePosition(force: true);
         RenderChapters();
-        _media?.SetNowPlaying(book.IsSet ? TrackTitle(index) : book.Title, book.IsSet ? book.Title : AppInfo.Name);
+        UpdateMediaControls();
 
         if (play)
         {
@@ -279,6 +311,7 @@ public partial class MainWindow
             msg += $" About {TimeText.SpokenRoughly((d - t) / rate)} left at this speed.";
         }
         msg += _engine.IsPlaying ? " Playing." : " Paused.";
+        msg += $" {_book.Title}{(_book.Byline.Length > 0 ? ", " + _book.Byline : "")}.";
         _say.Say(msg);
     }
 

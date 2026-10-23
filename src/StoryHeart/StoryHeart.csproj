@@ -30,12 +30,12 @@
   </ItemGroup>
 
   <!--
-    SoundTouch.Net is LGPL-licensed, so it must stay a separate file people can replace,
+    SoundTouch.Net and TagLib# are LGPL-licensed, so they must stay separate files people can replace,
     even in the single-file portable build.
   -->
   <Target Name="KeepLgplLibrarySeparate" AfterTargets="ComputeResolvedFilesToPublishList">
     <ItemGroup>
-      <ResolvedFileToPublish Condition="'%(ResolvedFileToPublish.Filename)' == 'SoundTouch.Net'">
+      <ResolvedFileToPublish Condition="'%(ResolvedFileToPublish.Filename)' == 'SoundTouch.Net' Or '%(ResolvedFileToPublish.Filename)' == 'TagLibSharp'">
         <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       </ResolvedFileToPublish>
     </ItemGroup>

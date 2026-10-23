@@ -43,7 +43,7 @@ public partial class App : Application
         };
 
         // Files passed on the command line, e.g. from "Open with" in File Explorer.
-        var window = new MainWindow(store, files);
+        var window = new MainWindow(store, files) { IsSmokeTest = smokeTest };
         MainWindow = window;
         _instance?.Listen(paths => Dispatcher.BeginInvoke(() => window.ReceiveFiles(paths)));
         if (smokeTest)

@@ -72,23 +72,27 @@ internal static class Updater
     }
 
     /// <summary>
-    /// Starts installing a downloaded update. The caller must close StoryHeart straight afterwards; the
-    /// new version opens by itself when it's done.
+    /// Starts installing a downloaded update. The caller must close StoryHeart straight afterwards. The new
+    /// version opens by itself when it's done, unless <paramref name="reopen"/> is false, as when an update
+    /// installs because you closed StoryHeart.
     /// </summary>
-    public static void StartInstall(string downloadedFile)
+    public static void StartInstall(string downloadedFile, bool reopen = true)
     {
-        if (AppInfo.IsPortable) StartPortableUpdate(downloadedFile);
-        else StartInstaller(downloadedFile);
+        if (AppInfo.IsPortable) StartPortableUpdate(downloadedFile, reopen);
+        else StartInstaller(downloadedFile, reopen);
     }
 
-    private static void StartInstaller(string setup)
+    private static void StartInstaller(string setup, bool reopen)
     {
         var programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
         bool allUsers = AppContext.BaseDirectory.StartsWith(programFiles, StringComparison.OrdinalIgnoreCase);
         // The installer remembers the folder and choices from last time. Installs for everyone ask Windows for permission.
         var args = "/SILENT /SUPPRESSMSGBOXES /NORESTART /CLOSEAPPLICATIONS " + (allUsers ? "/ALLUSERS" : "/CURRENTUSER");
+        // Tells the installer not to open StoryHeart when it has finished.
+        if (!reopen) args += " /NOLAUNCH";
         var installer = Process.Start(new ProcessStartInfo(setup, args) { UseShellExecute = true })
                         ?? throw new InvalidOperationException("The installer didn't start.");
+        if (!reopen) return;
 
         // A small helper waits for the installer to finish, then opens the new version.
         RunHiddenScript("reopen-after-install.ps1", """
@@ -99,7 +103,7 @@ internal static class Updater
             """, "-InstallerId", installer.Id.ToString(), "-Exe", Path.Combine(AppContext.BaseDirectory, AppInfo.Name + ".exe"));
     }
 
-    private static void StartPortableUpdate(string zip)
+    private static void StartPortableUpdate(string zip, bool reopen)
     {
         var work = Path.Combine(Path.GetTempPath(), AppInfo.Name + "-update", "portable");
         if (Directory.Exists(work)) Directory.Delete(work, true);
@@ -113,7 +117,7 @@ internal static class Updater
         // A small script waits for StoryHeart to close, copies the new files over (leaving the Data folder alone),
         // and opens the new version.
         RunHiddenScript("update-portable.ps1", """
-            param([int]$ProcessId, [string]$Source, [string]$Target, [string]$Exe)
+            param([int]$ProcessId, [string]$Source, [string]$Target, [string]$Exe, [int]$Reopen)
             Wait-Process -Id $ProcessId -ErrorAction SilentlyContinue
             for ($try = 0; $try -lt 10; $try++) {
                 try {
@@ -122,8 +126,8 @@ internal static class Updater
                     break
                 } catch { Start-Sleep -Milliseconds 500 }
             }
-            Start-Process -FilePath (Join-Path $Target $Exe)
-            """, "-ProcessId", Environment.ProcessId.ToString(), "-Source", sourceDir, "-Target", target, "-Exe", exe);
+            if ($Reopen) { Start-Process -FilePath (Join-Path $Target $Exe) }
+            """, "-ProcessId", Environment.ProcessId.ToString(), "-Source", sourceDir, "-Target", target, "-Exe", exe, "-Reopen", reopen ? "1" : "0");
     }
 
     /// <summary>Runs a short PowerShell script in the background, with no window.</summary>

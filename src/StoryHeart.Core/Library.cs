@@ -36,6 +36,11 @@ public sealed class BookEntry
     public string Title { get; set; } = "";
     /// <summary>True when you have renamed the book, so the title isn't replaced by one made from the file names.</summary>
     public bool TitleEdited { get; set; }
+    public string? Author { get; set; }
+    public string? Narrator { get; set; }
+    public string? Series { get; set; }
+    /// <summary>True once the title, author and so on have been looked for in the book's files.</summary>
+    public bool DetailsRead { get; set; }
     /// <summary>Full paths of the book's files, in the order they play.</summary>
     public List<string> Files { get; set; } = [];
     public long Size { get; set; }
@@ -93,6 +98,24 @@ public sealed class BookEntry
         };
     }
 
+    /// <summary>
+    /// Uses details read from the book's files. The title only changes if you haven't renamed the book yourself.
+    /// </summary>
+    public void ApplyDetails(BookDetails? details)
+    {
+        DetailsRead = true;
+        if (details is null) return;
+        if (details.Title is { } title && !TitleEdited) Title = title;
+        Author = details.Author;
+        Narrator = details.Narrator;
+        Series = details.Series;
+    }
+
+    /// <summary>"by Author, read by Narrator", or "" when neither is known.</summary>
+    [JsonIgnore]
+    public string Byline =>
+        (Author is null ? "" : "by " + Author) + (Narrator is null ? "" : (Author is null ? "" : ", ") + "read by " + Narrator);
+
     public List<string> MissingFiles() => Files.Where(f => !File.Exists(f)).ToList();
 
     /// <summary>Identifies a book by its file names and sizes, so it is recognised again even if moved.</summary>
@@ -142,6 +165,8 @@ public sealed class Settings
     public string? ResumeView { get; set; }
     /// <summary>Set just before installing an update: the book that was open, if any.</summary>
     public string? ResumeBookKey { get; set; }
+    /// <summary>The "Last updated" date of the licence agreement you last saw and agreed to.</summary>
+    public string? AgreementSeen { get; set; }
     /// <summary>Where the main window was and how big, so it opens the same way next time.</summary>
     public WindowPlace? Window { get; set; }
 

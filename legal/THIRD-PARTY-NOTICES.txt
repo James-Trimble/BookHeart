@@ -29,6 +29,28 @@ for more details.
 
 
 ================================================================================
+TagLib#
+Copyright (c) 2005-2020 Brian Nickel, Gabriel Burt, Stephen Shaw, Aaron
+Bockover and other contributors
+https://github.com/mono/taglib-sharp
+Licence: GNU Lesser General Public License, version 2.1
+================================================================================
+
+TagLib# reads the title, author and cover picture stored inside audio files. It
+is included unmodified, as the separate file TagLibSharp.dll, so you can replace
+it with your own build of the library. Its source code is available from the
+address above. The full text of the licence is in LGPL-2.1.txt, which comes with
+StoryHeart.
+
+This library is free software; you can redistribute it and/or modify it under
+the terms of the GNU Lesser General Public License version 2.1 as published by
+the Free Software Foundation. This library is distributed in the hope that it
+will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General
+Public License for more details.
+
+
+================================================================================
 NAudio
 Copyright 2020 Mark Heath
 https://github.com/naudio/NAudio

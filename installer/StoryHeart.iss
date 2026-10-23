@@ -161,11 +161,17 @@ Root: HKA; Subkey: "Software\Classes\Applications\{#AppExe}\SupportedTypes"; Val
 Filename: "{app}\{#AppExe}"; Description: "{cm:LaunchProgram,{#AppName}}"; Flags: nowait postinstall skipifsilent
 ; When StoryHeart updates itself, the installer runs silently. StoryHeart starts a helper that reopens it
 ; afterwards; this is a backup. Only one copy of StoryHeart runs, so it never opens twice.
-Filename: "{app}\{#AppExe}"; Flags: nowait runasoriginaluser; Check: WizardSilent
+Filename: "{app}\{#AppExe}"; Flags: nowait runasoriginaluser; Check: ReopenAfterUpdate
 
 [Code]
 var
   OldAppDir: String;
+
+// An update that installs because StoryHeart was closed passes /NOLAUNCH, so StoryHeart stays closed.
+function ReopenAfterUpdate: Boolean;
+begin
+  Result := WizardSilent and (Pos('/NOLAUNCH', UpperCase(GetCmdTail)) = 0);
+end;
 
 // Updating from BookHeart: install into a StoryHeart folder next to the old BookHeart one, wherever that was.
 procedure InitializeWizard;

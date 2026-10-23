@@ -53,8 +53,27 @@ public partial class UpdateDialog : Window
         return dlg;
     }
 
+    /// <summary>For an update already downloaded in the background: Install now, Later or Skip this version.</summary>
+    public static UpdateDialog ShowDownloaded(Window owner, ReleaseInfo release, string file, bool paused)
+    {
+        var dlg = new UpdateDialog(owner, release) { DownloadedFile = file, Title = "Download complete" };
+        dlg.Heading.Text = $"{AppInfo.Name} {release.Version} is ready to install";
+        dlg.Intro.Text = $"The update has finished downloading. You have version {AppInfo.Version}." +
+                         (paused ? " Your book is paused." : "") +
+                         " Choose Later to carry on, and it will install when you close " + AppInfo.Name + ".";
+        dlg.LaterBtn.Content = "Later";
+        dlg.ShowDialog();
+        return dlg;
+    }
+
     private async Task InstallAsync()
     {
+        if (DownloadedFile is not null)
+        {
+            Choice = UpdateChoice.Install;
+            Close();
+            return;
+        }
         if (!Updater.CanUpdateItself)
         {
             OpenPage(_release.PageUrl);
