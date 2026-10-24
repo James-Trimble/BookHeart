@@ -51,6 +51,7 @@ Then 0.2.0, the finished version of all of the above.
 - **Signing**, so Windows stops warning that StoryHeart is from an unknown publisher.
 - **A sighted tester**, to check how StoryHeart looks and point out anything odd.
 - **Decide whether the code stays public**, or moves to a private repository with only the releases public.
+- **Decide which Windows versions to say StoryHeart supports**, after checking Microsoft's list for .NET 10, now that Windows 10's normal support has ended.
 
 ## 1.0: the first public release
 
